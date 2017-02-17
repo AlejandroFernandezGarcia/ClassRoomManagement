@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">ClassRoomManagement</string>
+    <string name="app_name">Class Room Management</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Button text -->
+    <string name="btn_logout_from_google">Logout from Google</string>
+    <string name="loading">Loading</string>
 </resources>
