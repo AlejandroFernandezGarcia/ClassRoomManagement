@@ -1,0 +1,1 @@
+CREATE USER 'usr_app' IDENTIFIED BY 'apm_2016';
