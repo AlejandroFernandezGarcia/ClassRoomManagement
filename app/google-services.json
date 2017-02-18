@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "453213501517",
-    "project_id": "classroommanagement-bec37"
+    "project_number": "1044141551950",
+    "project_id": "classroommanagement-d98a9"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:453213501517:android:403524e53598b4d9",
+        "mobilesdk_app_id": "1:1044141551950:android:403524e53598b4d9",
         "android_client_info": {
           "package_name": "es.udc.apm.classroommanagement"
         }
       },
       "oauth_client": [
         {
-          "client_id": "453213501517-1e36m8m7b6o6eitppcg452smls2oidsp.apps.googleusercontent.com",
+          "client_id": "1044141551950-gko9golk2bbvcnhgq4oo1l11ns2mfo4a.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "es.udc.apm.classroommanagement",
-            "certificate_hash": "0736DDBCEA3F6E98AE8E028373E80DF9EB533C29"
+            "certificate_hash": "53E375193940AF18664D2AA721F1437F66F70F30"
           }
         },
         {
-          "client_id": "453213501517-e93nkbtqanflcfjhd2vcqibm15fmqlfu.apps.googleusercontent.com",
+          "client_id": "1044141551950-0i8bevm1l6fi2cfqgp0fnopu53p8ploq.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDOKiEWcU2zvX8NTZATIOTEtmZrAT3O_qQ"
+          "current_key": "AIzaSyDtmJIuuEh1NwSbzsjWpGPBsw6iwtP1wcE"
         }
       ],
       "services": {
