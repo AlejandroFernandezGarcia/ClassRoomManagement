@@ -10,14 +10,9 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -27,7 +22,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
+
 
 public class LoginActivity extends AppCompatActivity implements
         View.OnClickListener,
@@ -40,10 +35,6 @@ public class LoginActivity extends AppCompatActivity implements
     private ProgressDialog mProgressDialog;
 
     private SignInButton btnSignIn;
-    private Button btnSignOut;
-    private LinearLayout llProfileLayout;
-    private ImageView imgProfilePic;
-    private TextView txtName, txtEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,14 +42,8 @@ public class LoginActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
-        btnSignOut = (Button) findViewById(R.id.btn_sign_out);
-        llProfileLayout = (LinearLayout) findViewById(R.id.llProfile);
-        imgProfilePic = (ImageView) findViewById(R.id.imgProfilePic);
-        txtName = (TextView) findViewById(R.id.txtName);
-        txtEmail = (TextView) findViewById(R.id.txtEmail);
 
         btnSignIn.setOnClickListener(this);
-        btnSignOut.setOnClickListener(this);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -99,45 +84,15 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-
-    private void signOut() {
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        updateUI(false);
-                    }
-                });
-    }
-
-
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-            String personName = "";
-            if(acct.getDisplayName() != null){
-                personName = acct.getDisplayName();
-            }
-            String personPhotoUrl = acct.getPhotoUrl().toString();
-            String email = acct.getEmail();
-            String id = acct.getId();
-            Log.e(TAG, "Name: " + personName + ", email: " + email
-                    + ", Image: " + personPhotoUrl);
-
-            txtName.setText(personName);
-            txtEmail.setText(email);
-            Glide.with(getApplicationContext()).load(personPhotoUrl)
-                    .thumbnail(0.5f)
-                    .crossFade()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(imgProfilePic);
-
-            updateUI(true);
+            loginSuccess(acct);
         } else {
             // Signed out, show unauthenticated UI.
-            updateUI(false);
+            loginFail();
         }
     }
 
@@ -148,10 +103,6 @@ public class LoginActivity extends AppCompatActivity implements
         switch (id) {
             case R.id.btn_sign_in:
                 signIn();
-                break;
-
-            case R.id.btn_sign_out:
-                signOut();
                 break;
 
         }
@@ -222,15 +173,25 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    private void updateUI(boolean isSignedIn) {
-        if (isSignedIn) {
-            btnSignIn.setVisibility(View.GONE);
-            btnSignOut.setVisibility(View.VISIBLE);
-            llProfileLayout.setVisibility(View.VISIBLE);
-        } else {
-            btnSignIn.setVisibility(View.VISIBLE);
-            btnSignOut.setVisibility(View.GONE);
-            llProfileLayout.setVisibility(View.GONE);
+    private void loginSuccess(GoogleSignInAccount acct){
+        Log.i(TAG, "Login correcto");
+
+        String name =  acct.getDisplayName();
+        String email = acct.getEmail();
+        String id = acct.getId();
+        if(name != null && email != null && id != null) {
+            Log.e(TAG, "Name: " + name + ", email: " + email
+                    + ", Id: " + id);
+            Intent gpsLocationIntent = new Intent(this, GPSLocationActivity.class);
+            /*
+            Como ya tenemos los datos de login podemos hacer un logout
+             */
+            Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient);
+            startActivity(gpsLocationIntent);
         }
+    }
+
+    private void loginFail(){
+        Log.i(TAG, "Login incorrecto");
     }
 }
