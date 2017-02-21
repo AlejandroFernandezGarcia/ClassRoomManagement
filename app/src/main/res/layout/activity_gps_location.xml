@@ -26,12 +26,16 @@
         android:layout_marginTop="16dp"
         android:id="@+id/latitudeLabel" />
 
-    <Button
-        android:text="@string/btn_location"
+    <ToggleButton
+        android:text="ToggleButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/get_location_button"
-        android:layout_marginBottom="27dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:id="@+id/gpsToggleButton"
+        android:textOff="@string/btn_gps_off"
+        android:textOn="@string/btn_gps_on"
+        android:checked="false" />
+
 </RelativeLayout>
