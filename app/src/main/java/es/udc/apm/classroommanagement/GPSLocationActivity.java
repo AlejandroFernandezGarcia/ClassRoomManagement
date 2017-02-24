@@ -55,7 +55,6 @@ public class GPSLocationActivity extends AppCompatActivity implements
             case R.id.get_location_button:
                 change_gps_status();
                 break;
-
         }
     }
 

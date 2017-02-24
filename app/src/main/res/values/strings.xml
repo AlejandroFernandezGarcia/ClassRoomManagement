@@ -14,8 +14,16 @@
     <string name="btn_location">Última posición</string>
     <string name="loading">Cargando</string>
 
-
     <!-- TextViews Text-->
     <string name="longitude_label">Longitud</string>
     <string name="latitude_label">Latitud</string>
+
+    <!-- Database Text-->
+    <string name="welcome_message">
+        Click FETCH to fetch the contents of the database table TROLE.
+    </string>
+    <string name="fetch_text">Fetch</string>
+    <string name="clear_text">Clear</string>
+    <string name="connection_error">Connection error.</string>
+    <string name="fetch_cancelled">Fetch cancelled.</string>
 </resources>

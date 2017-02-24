@@ -183,11 +183,13 @@ public class LoginActivity extends AppCompatActivity implements
             Log.e(TAG, "Name: " + name + ", email: " + email
                     + ", Id: " + id);
             Intent gpsLocationIntent = new Intent(this, GPSLocationActivity.class);
+            // Intent dataBaseIntent = new Intent(this, DatabaseActivity.class);
             /*
             Como ya tenemos los datos de login podemos hacer un logout
              */
             Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient);
             startActivity(gpsLocationIntent);
+            // startActivity(dataBaseIntent);
         }
     }
 
