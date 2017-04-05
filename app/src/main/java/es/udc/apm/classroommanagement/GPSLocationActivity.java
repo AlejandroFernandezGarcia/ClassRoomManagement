@@ -29,59 +29,71 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+
+import es.udc.apm.classroommanagement.daos.BuildingDao;
+import es.udc.apm.classroommanagement.objects.BuildingInfo;
 
 public class GPSLocationActivity extends AppCompatActivity implements
-        View.OnClickListener,
         GoogleApiClient.OnConnectionFailedListener,
         GoogleApiClient.ConnectionCallbacks,
-        LocationListener {
+        LocationListener, OnMapReadyCallback,
+        View.OnClickListener{
 
     private static final int PETICION_PERMISO_LOCALIZACION = 101;
     private static final int PETICION_CONFIG_UBICACION = 201;
 
-    private ToggleButton getLocationToggleButton;
-    private TextView latitudeLabel, longitudeLabel;
-
     private GoogleApiClient apiClient;
 
     private LocationRequest locRequest;
+    private GoogleMap mapa;
+    private Marker personMarker;
+
+    private Button change_mode_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gps_location);
 
-        getLocationToggleButton = (ToggleButton) findViewById(R.id.gpsToggleButton);
-        getLocationToggleButton.setOnClickListener(this);
-
-        latitudeLabel = (TextView) findViewById(R.id.latitudeLabel);
-        longitudeLabel = (TextView) findViewById(R.id.longitudeLabel);
-
         apiClient = new GoogleApiClient.Builder(this)
                     .enableAutoManage(this, this)
                     .addConnectionCallbacks(this)
                     .addApi(LocationServices.API)
                     .build();
+
+                MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
+
+        mapFragment.getMapAsync(this);
+
+        change_mode_btn = (Button)findViewById(R.id.change_mode_btn);
+        change_mode_btn.setOnClickListener(this);
+
+        enableLocationUpdates();
+
     }
 
     @Override
-    public void onClick(View v) {
-        int id = v.getId();
+    public void onClick(View view) {
 
-        switch (id) {
-            case R.id.gpsToggleButton:
-                change_gps_status(getLocationToggleButton.isChecked());
+        int id = view.getId();
+
+        switch (id){
+            case R.id.change_mode_btn:
+                Intent indoorLocationIntent = new Intent(this, IndoorLocationActivity.class);
+                startActivity(indoorLocationIntent);
                 break;
-
-        }
-    }
-
-    private void change_gps_status(boolean gps_btn_status){
-        if (gps_btn_status) {
-            enableLocationUpdates();
-        } else {
-            disableLocationUpdates();
         }
     }
 
@@ -114,14 +126,12 @@ public class GPSLocationActivity extends AppCompatActivity implements
                         try {
                             status.startResolutionForResult(GPSLocationActivity.this, PETICION_CONFIG_UBICACION);
                         } catch (IntentSender.SendIntentException e) {
-                            getLocationToggleButton.setChecked(false);
                             showToast("Error al intentar solucionar configuración de ubicación");
                         }
 
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                         showToast("No se puede cumplir la configuración de ubicación necesaria");
-                        getLocationToggleButton.setChecked(false);
                         break;
                 }
             }
@@ -146,18 +156,6 @@ public class GPSLocationActivity extends AppCompatActivity implements
     }
 
 
-    private void updateUI(Location loc) {
-        if (loc != null) {
-            latitudeLabel.setText(getString(R.string.latitude_label) + ": "  + String.valueOf(loc.getLatitude()));
-            longitudeLabel.setText(getString(R.string.longitude_label) + ": " + String.valueOf(loc.getLongitude()));
-        } else {
-            latitudeLabel.setText(getString(R.string.latitude_label) + ": (desconocida)");
-            longitudeLabel.setText(getString(R.string.longitude_label) + ": (desconocida)");
-        }
-    }
-
-
-
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         //Conectado correctamente a Google Play Services
@@ -173,7 +171,8 @@ public class GPSLocationActivity extends AppCompatActivity implements
             Location lastLocation =
                     LocationServices.FusedLocationApi.getLastLocation(apiClient);
 
-            updateUI(lastLocation);
+            moveMap(lastLocation);
+            movePersonMarker(lastLocation);
         }
 
 
@@ -207,7 +206,8 @@ public class GPSLocationActivity extends AppCompatActivity implements
                 Location lastLocation =
                         LocationServices.FusedLocationApi.getLastLocation(apiClient);
 
-                updateUI(lastLocation);
+                moveMap(lastLocation);
+                movePersonMarker(lastLocation);
 
             } else {
                 //Permiso denegado:
@@ -228,7 +228,6 @@ public class GPSLocationActivity extends AppCompatActivity implements
                         break;
                     case Activity.RESULT_CANCELED:
                         showToast("El usuario no ha realizado los cambios de configuración necesarios");
-                        getLocationToggleButton.setChecked(false);
                         break;
                 }
                 break;
@@ -238,8 +237,8 @@ public class GPSLocationActivity extends AppCompatActivity implements
     @Override
     public void onLocationChanged(Location location) {
 
-        //Mostramos la nueva ubicación recibida
-        updateUI(location);
+        moveMap(location);
+        movePersonMarker(location);
     }
 
     private void showToast(String message){
@@ -249,4 +248,48 @@ public class GPSLocationActivity extends AppCompatActivity implements
 
         toast.show();
     }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+
+        mapa = map;
+        //mapa.getUiSettings().setZoomControlsEnabled(true);
+        drawBuildingsMarkers();
+
+    }
+
+    private void moveMap(Location pos)
+    {
+        CameraUpdate camUpd1 = CameraUpdateFactory.newLatLngZoom(new LatLng(pos.getLatitude(), pos.getLongitude()), 19);
+        mapa.moveCamera(camUpd1);
+    }
+
+    private void movePersonMarker(Location pos){
+
+        LatLng latLng = new LatLng(pos.getLatitude(), pos.getLongitude());
+
+        if(personMarker!=null){
+            personMarker.setPosition(latLng);
+        }else{
+            personMarker = mapa.addMarker(new MarkerOptions()
+                                    .position(latLng)
+                                    .title("I am here")
+                                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_person)));
+        }
+    }
+
+    private void drawBuildingsMarkers(){
+
+        BuildingDao buildingDao = new BuildingDao();
+        ArrayList <BuildingInfo> buildings = buildingDao.getBuildings();
+
+        for (BuildingInfo building : buildings) {
+            LatLng latLng = new LatLng(building.getLatitude(), building.getLongitude());
+            mapa.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            .title(building.getName())
+                            .snippet(building.getInfoString()));
+        }
+    }
 }
+
