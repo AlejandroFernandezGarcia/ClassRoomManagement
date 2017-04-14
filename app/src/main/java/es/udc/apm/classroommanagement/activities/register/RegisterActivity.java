@@ -44,6 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
         addItemsToSpinner();
 
         final Button button = (Button) findViewById(R.id.register_button);
+
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 onRegisterButtonClick();
