@@ -7,8 +7,7 @@
     android:background="@drawable/loginbackground"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context="es.udc.apm.classroommanagement.LoginActivity"
-    android:weightSum="1">
+    tools:context="es.udc.apm.classroommanagement.DatabaseActivity">
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/btn_sign_in"

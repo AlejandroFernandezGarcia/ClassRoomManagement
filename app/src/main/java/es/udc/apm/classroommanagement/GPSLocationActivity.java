@@ -67,12 +67,12 @@ public class GPSLocationActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_gps_location);
 
         apiClient = new GoogleApiClient.Builder(this)
-                    .enableAutoManage(this, this)
-                    .addConnectionCallbacks(this)
-                    .addApi(LocationServices.API)
-                    .build();
+                .enableAutoManage(this, this)
+                .addConnectionCallbacks(this)
+                .addApi(LocationServices.API)
+                .build();
 
-                MapFragment mapFragment = (MapFragment) getFragmentManager()
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
@@ -272,9 +272,9 @@ public class GPSLocationActivity extends AppCompatActivity implements
             personMarker.setPosition(latLng);
         }else{
             personMarker = mapa.addMarker(new MarkerOptions()
-                                    .position(latLng)
-                                    .title("I am here")
-                                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_person)));
+                    .position(latLng)
+                    .title("I am here")
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_person)));
         }
     }
 
@@ -286,10 +286,9 @@ public class GPSLocationActivity extends AppCompatActivity implements
         for (BuildingInfo building : buildings) {
             LatLng latLng = new LatLng(building.getLatitude(), building.getLongitude());
             mapa.addMarker(new MarkerOptions()
-                            .position(latLng)
-                            .title(building.getName())
-                            .snippet(building.getInfoString()));
+                    .position(latLng)
+                    .title(building.getName())
+                    .snippet(building.getInfoString()));
         }
     }
 }
-

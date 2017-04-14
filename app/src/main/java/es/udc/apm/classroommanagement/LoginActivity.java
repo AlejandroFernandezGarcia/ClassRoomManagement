@@ -1,17 +1,12 @@
 package es.udc.apm.classroommanagement;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -23,22 +18,34 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 
+import es.udc.apm.classroommanagement.activities.register.RegisterActivity;
+import es.udc.apm.classroommanagement.model.User;
+import es.udc.apm.classroommanagement.services.UserService;
+
+import static es.udc.apm.classroommanagement.utils.Utils.isOnline;
+import static es.udc.apm.classroommanagement.utils.Utils.showToast;
+
 public class LoginActivity extends AppCompatActivity implements
         View.OnClickListener,
         GoogleApiClient.OnConnectionFailedListener {
 
+    //Constants
     private static final String TAG = LoginActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 7;
+    public final static String USER_GOOGLE_ID = "es.udc.apm.classroommanagement.USER_GOOGLE_ID";
+    public final static String USER_MAIL = "es.udc.apm.classroommanagement.USER_MAIL";
 
     private GoogleApiClient mGoogleApiClient;
     private ProgressDialog mProgressDialog;
-
     private SignInButton btnSignIn;
+    private UserService userService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        userService = new UserService();
 
         btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
 
@@ -58,25 +65,10 @@ public class LoginActivity extends AppCompatActivity implements
         btnSignIn.setScopes(gso.getScopeArray());
     }
 
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
-
-    private void showToast(String message){
-        Toast toast =
-                Toast.makeText(getApplicationContext(),
-                        message, Toast.LENGTH_SHORT);
-
-        toast.show();
-    }
-
 
     private void signIn() {
-        if(!isOnline()){
-            showToast(getString(R.string.no_internet));
+        if (!isOnline(getApplicationContext())) {
+            showToast(getApplicationContext(), getString(R.string.no_internet));
         } else {
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
             startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -122,8 +114,8 @@ public class LoginActivity extends AppCompatActivity implements
     public void onStart() {
         super.onStart();
 
-        if(!isOnline()){
-            showToast(getString(R.string.no_internet));
+        if (!isOnline(getApplicationContext())) {
+            showToast(getApplicationContext(), getString(R.string.no_internet));
         } else {
 
             OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
@@ -172,25 +164,47 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    private void loginSuccess(GoogleSignInAccount acct){
+    private void loginSuccess(GoogleSignInAccount acct) {
         Log.i(TAG, "Login correcto");
 
-        String name =  acct.getDisplayName();
+        String name = acct.getDisplayName();
         String email = acct.getEmail();
-        String id = acct.getId();
-        if(name != null && email != null && id != null) {
-            Log.e(TAG, "Name: " + name + ", email: " + email
-                    + ", Id: " + id);
+        String googleID = acct.getId();
+        User user = null;
+
+        try {
+            if (userService != null) {
+                user = userService.execute(googleID).get();
+            } else {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            showToast(getApplicationContext(), getString(R.string.connection_error));
+            return;
+        }
+
+        if (user != null && user.getId() >= 0 && user.getGoogleId() != null) {
+            Log.d(TAG, "Name: " + name + ", email: " + email
+                    + ", Id: " + googleID);
             Intent gpsLocationIntent = new Intent(this, GPSLocationActivity.class);
             /*
             Como ya tenemos los datos de login podemos hacer un logout
              */
             Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient);
             startActivity(gpsLocationIntent);
+        } else {
+            Log.d(TAG, "Usuario no registrado: " + "Name: " + name + ", email: " + email
+                    + ", Id: " + googleID);
+            Intent registerIntent = new Intent(this, RegisterActivity.class);
+            Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient);
+            registerIntent.putExtra(USER_GOOGLE_ID, googleID);
+            registerIntent.putExtra(USER_MAIL, email);
+            startActivity(registerIntent);
         }
     }
 
-    private void loginFail(){
+    private void loginFail() {
         Log.i(TAG, "Login incorrecto");
     }
 }
