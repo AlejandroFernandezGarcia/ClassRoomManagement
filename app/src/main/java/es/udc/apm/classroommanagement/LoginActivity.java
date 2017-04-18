@@ -4,9 +4,17 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.support.v7.view.menu.MenuBuilder;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -39,11 +47,22 @@ public class LoginActivity extends AppCompatActivity implements
     private ProgressDialog mProgressDialog;
     private SignInButton btnSignIn;
     private UserService userService;
+    private DrawerLayout drawerLayout;
+    private NavigationView navView;
+    //private Toolbar appbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //appbar = (Toolbar)findViewById(R.id.appbar);
+        //setSupportActionBar(appbar);
+
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_nav_menu);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
 
         userService = new UserService();
 
@@ -63,8 +82,65 @@ public class LoginActivity extends AppCompatActivity implements
         // Customizing G+ button
         btnSignIn.setSize(SignInButton.SIZE_STANDARD);
         btnSignIn.setScopes(gso.getScopeArray());
+
+        navView = (NavigationView)findViewById(R.id.navview);
+        navView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                        boolean fragmentTransaction = false;
+                        Fragment fragment = null;
+
+                        switch (menuItem.getItemId()) {
+                            case R.id.menu_seccion_1:
+                                Log.i("NavigationView","Seccion 1\n");
+                                break;
+                            case R.id.menu_seccion_2:
+                                Log.i("NavigationView","Seccion 2\n");
+                                break;
+                            case R.id.menu_seccion_3:
+                                Log.i("NavigationView","Seccion 3\n");
+                                break;
+                            case R.id.menu_opcion_1:
+                                Log.i("NavigationView", "Pulsada opción 1");
+                                break;
+                            case R.id.menu_opcion_2:
+                                Log.i("NavigationView", "Pulsada opción 2");
+                                break;
+                        }
+
+                        drawerLayout.closeDrawers();
+
+                        return true;
+                    }
+                });
     }
 
+    //region Lateral menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    //endregion
 
     private void signIn() {
         if (!isOnline(getApplicationContext())) {
