@@ -20,10 +20,6 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services:10.2.0'
-    compile 'com.google.android.gms:play-services-maps:10.2.0'
-    compile 'com.google.android.gms:play-services-auth:10.2.0'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
     compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -32,10 +28,15 @@ dependencies {
     compile 'com.google.android.gms:play-services:10.2.0'
     compile 'com.google.android.gms:play-services-auth:10.2.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.android.support:support-v13:25.2.0'
-    compile 'com.android.support.constraint:constraint-layout:+'
-    compile 'com.android.support:design:25.3.1'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+    compile 'com.google.android.gms:play-services:10.2.0'
+    compile 'com.google.android.gms:play-services-maps:10.2.0'
+    compile 'com.google.android.gms:play-services-auth:10.2.0'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.android.support:support-v13:25.2.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:support-v4:25.3.1'
     testCompile 'junit:junit:4.12'
 }
 

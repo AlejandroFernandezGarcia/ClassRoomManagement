@@ -38,4 +38,10 @@
     <string name="confirm">Confirmar</string>
     <string name="cancel">Cancelar</string>
 
+    <!--Menu labels-->
+    <string name="menu_gps_location">Gps</string>
+    <string name="menu_indoor_location">Interior</string>
+    <string name="menu_update_profile">Perfil</string>
+    <string name="menu_exit">Salir</string>
+
 </resources>

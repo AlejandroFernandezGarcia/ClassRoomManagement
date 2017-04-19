@@ -37,4 +37,11 @@
     <string name="confirmation_message">Please confirm that the following data is correct:\n- Name: %1$s \n- Surname: %2$s \n- Role: %3$s</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
+
+    <!--Menu labels-->
+    <string name="menu_gps_location">Gps</string>
+    <string name="menu_indoor_location">Indoor</string>
+    <string name="menu_update_profile">Profile</string>
+    <string name="menu_exit">Exit</string>
+
 </resources>

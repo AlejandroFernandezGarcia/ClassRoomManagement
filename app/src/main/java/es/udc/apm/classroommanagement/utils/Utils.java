@@ -3,6 +3,7 @@ package es.udc.apm.classroommanagement.utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -24,5 +25,12 @@ public class Utils {
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
+    public static void logInfo(Object obj,String message){
+        Log.i(obj.getClass().getSimpleName(),message);
+    }
+
+    public static void logError(Object obj,Exception e){
+        Log.e(obj.getClass().toString(),e.getMessage());
+    }
 
 }

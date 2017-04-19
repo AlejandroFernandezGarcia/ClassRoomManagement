@@ -1,11 +1,12 @@
-package es.udc.apm.classroommanagement.objects;
+package es.udc.apm.classroommanagement.model;
 
 /**
  * Created by david on 12/03/17.
  */
 
-public class BuildingInfo {
+public class Building {
 
+    private short id;
     private double latitude;
     private double longitude;
     private String name;
@@ -15,8 +16,9 @@ public class BuildingInfo {
     private String region;
     private String country;
 
-    public BuildingInfo(double latitude, double longitude, String name, String phone, String address,
-                        int zipCode, String region, String country) {
+    public Building(short id,double latitude, double longitude, String name, String phone, String address,
+                    int zipCode, String region, String country) {
+        this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
         this.name = name;
@@ -30,9 +32,9 @@ public class BuildingInfo {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof BuildingInfo)) return false;
+        if (!(o instanceof Building)) return false;
 
-        BuildingInfo that = (BuildingInfo) o;
+        Building that = (Building) o;
 
         if (Double.compare(that.getLatitude(), getLatitude()) != 0) return false;
         if (Double.compare(that.getLongitude(), getLongitude()) != 0) return false;
@@ -90,15 +92,15 @@ public class BuildingInfo {
         this.country = country;
     }
 
-    public BuildingInfo(BuildingInfo buildingInfo) {
-        this.latitude = buildingInfo.latitude;
-        this.longitude = buildingInfo.longitude;
-        this.name = buildingInfo.name;
-        this.phone = buildingInfo.phone;
-        this.address = buildingInfo.address;
-        this.zipCode = buildingInfo.zipCode;
-        this.region = buildingInfo.region;
-        this.country = buildingInfo.country;
+    public Building(Building building) {
+        this.latitude = building.latitude;
+        this.longitude = building.longitude;
+        this.name = building.name;
+        this.phone = building.phone;
+        this.address = building.address;
+        this.zipCode = building.zipCode;
+        this.region = building.region;
+        this.country = building.country;
     }
 
     public double getLatitude() {

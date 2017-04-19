@@ -1,12 +1,12 @@
-package es.udc.apm.classroommanagement.activities.register;
+package es.udc.apm.classroommanagement.fragments;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,20 +14,18 @@ import android.widget.Spinner;
 
 import java.util.List;
 
-import es.udc.apm.classroommanagement.GPSLocationActivity;
-import es.udc.apm.classroommanagement.LoginActivity;
+import es.udc.apm.classroommanagement.MainActivity;
 import es.udc.apm.classroommanagement.R;
 import es.udc.apm.classroommanagement.model.Role;
 import es.udc.apm.classroommanagement.services.RoleService;
 import es.udc.apm.classroommanagement.services.UserService;
+import es.udc.apm.classroommanagement.utils.Constants;
 
 import static es.udc.apm.classroommanagement.utils.Utils.isOnline;
+import static es.udc.apm.classroommanagement.utils.Utils.logError;
 import static es.udc.apm.classroommanagement.utils.Utils.showToast;
 
-public class RegisterActivity extends AppCompatActivity {
-
-    //Constants
-    private static final String TAG = RegisterActivity.class.getSimpleName();
+public class RegisterFragment extends Fragment {
 
     private static String userGoogleID;
     private static String userMail;
@@ -46,42 +44,56 @@ public class RegisterActivity extends AppCompatActivity {
     private boolean confirmed = false;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        ((MainActivity)getActivity()).showLateralMenu(true);
+    }
 
-        Intent intent = getIntent();
-        userGoogleID = intent.getStringExtra(LoginActivity.USER_GOOGLE_ID);
-        userMail = intent.getStringExtra(LoginActivity.USER_MAIL);
-        name = intent.getStringExtra(LoginActivity.USER_NAME);
-        surname = intent.getStringExtra(LoginActivity.USER_SURNAME);
+
+    public RegisterFragment() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_register, container, false);
+        //FIXME Si se llega aqui a traves del menu estos arguments no existen
+        userGoogleID = getArguments().getString(Constants.USER_GOOGLE_ID);
+        userMail = getArguments().getString(Constants.USER_MAIL);
+        name = getArguments().getString(Constants.USER_NAME);
+        surname = getArguments().getString(Constants.USER_SURNAME);
 
         roleService = new RoleService();
         userService = new UserService();
 
+        roleSpinner = (Spinner) view.findViewById(R.id.role_spinner);
+
         addItemsToSpinner();
 
-        editName = (EditText) findViewById(R.id.name_text);
-        editSurname = (EditText) findViewById(R.id.surname_text);
+        editName = (EditText) view.findViewById(R.id.name_text);
+        editSurname = (EditText) view.findViewById(R.id.surname_text);
 
         editName.setText(name);
         editSurname.setText(surname);
 
-        registryButton = (Button) findViewById(R.id.register_button);
+
+        registryButton = (Button) view.findViewById(R.id.register_button);
 
         registryButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 onRegisterButtonClick();
             }
         });
+
+        return view;
     }
 
     private void addItemsToSpinner() {
-        roleSpinner = (Spinner) findViewById(R.id.role_spinner);
         List<Role> roles = null;
 
-        if (!isOnline(getApplicationContext())) {
-            showToast(getApplicationContext(), getString(R.string.no_internet));
+        if (!isOnline(getActivity().getApplicationContext())) {
+            showToast(getActivity().getApplicationContext(), getString(R.string.no_internet));
             return;
         }
 
@@ -92,13 +104,12 @@ public class RegisterActivity extends AppCompatActivity {
                 throw new Exception();
             }
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            showToast(getApplicationContext(), getString(R.string.connection_error));
+            logError(this,e);
+            showToast(getActivity().getApplicationContext(), getString(R.string.connection_error));
             return;
         }
 
-        ArrayAdapter<Role> dataAdapter = new ArrayAdapter<Role>(this,
-                android.R.layout.simple_spinner_item, roles);
+        ArrayAdapter<Role> dataAdapter = new ArrayAdapter<Role>(this.getActivity(), android.R.layout.simple_spinner_item, roles);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         roleSpinner.setAdapter(dataAdapter);
 
@@ -110,8 +121,8 @@ public class RegisterActivity extends AppCompatActivity {
         final Role selectedRole;
         short roleID;
 
-        if (!isOnline(getApplicationContext())) {
-            showToast(getApplicationContext(), getString(R.string.no_internet));
+        if (!isOnline(getActivity().getApplicationContext())) {
+            showToast(getActivity().getApplicationContext(), getString(R.string.no_internet));
             return;
         }
 
@@ -133,8 +144,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         if (validated) {
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                    this);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
             alertDialogBuilder.setTitle(getString(R.string.confirm_registry));
             alertDialogBuilder.setMessage(getString(R.string.confirmation_message, name, surname, selectedRole.getRoleName())).setCancelable(false)
                     .setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {
@@ -142,21 +152,23 @@ public class RegisterActivity extends AppCompatActivity {
                             // if this button is clicked, save user in database
                             try {
                                 if (userService != null) {
+                                    //TODO Comprobar si existe, si existe actualiza sino inserta
                                     userService.insertUser(userGoogleID, name, surname, userMail, selectedRole.getId());
                                     confirmed = true;
                                 } else {
                                     throw new Exception();
                                 }
                             } catch (Exception e) {
-                                Log.e(TAG, e.getMessage());
+                                logError(this,e);
                                 confirmed = false;
-                                showToast(getApplicationContext(), getString(R.string.connection_error));
+                                showToast(getActivity().getApplicationContext(), getString(R.string.connection_error));
                                 return;
                             }
                             dialog.cancel();
                             if (confirmed) {
-                                Intent gpsLocationIntent = new Intent(RegisterActivity.this, GPSLocationActivity.class);
-                                startActivity(gpsLocationIntent);
+//                                Intent gpsLocationIntent = new Intent(RegisterFragment.this, GPSLocationFragment.class);
+//                                startActivity(gpsLocationIntent);
+                                //TODO Gps fragment
                             }
 
                         }

@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="es.udc.apm.classroommanagement.IndoorLocationActivity">
+    tools:context="es.udc.apm.classroommanagement.fragments.IndoorLocationFragment">
 
     <TextView
         android:text="Aquí irá la activity de realidad aumentada"
@@ -19,11 +19,4 @@
         android:layout_marginTop="69dp"
         android:id="@+id/textView" />
 
-    <Button
-        android:text="Modo exteriores"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/change_outdoor_btn" />
 </RelativeLayout>

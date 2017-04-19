@@ -1,20 +1,16 @@
-package es.udc.apm.classroommanagement;
+package es.udc.apm.classroommanagement.fragments;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.support.v7.view.menu.MenuBuilder;
+import android.view.ViewGroup;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -24,45 +20,42 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import es.udc.apm.classroommanagement.activities.register.RegisterActivity;
+import es.udc.apm.classroommanagement.MainActivity;
+import es.udc.apm.classroommanagement.R;
 import es.udc.apm.classroommanagement.model.User;
 import es.udc.apm.classroommanagement.services.UserService;
 
+import static es.udc.apm.classroommanagement.utils.Constants.USER_GOOGLE_ID;
+import static es.udc.apm.classroommanagement.utils.Constants.USER_MAIL;
+import static es.udc.apm.classroommanagement.utils.Constants.USER_NAME;
+import static es.udc.apm.classroommanagement.utils.Constants.USER_SURNAME;
 import static es.udc.apm.classroommanagement.utils.Utils.isOnline;
+import static es.udc.apm.classroommanagement.utils.Utils.logError;
+import static es.udc.apm.classroommanagement.utils.Utils.logInfo;
 import static es.udc.apm.classroommanagement.utils.Utils.showToast;
 
-public class LoginActivity extends AppCompatActivity implements
-        View.OnClickListener,
-        GoogleApiClient.OnConnectionFailedListener {
+public class LoginFragment extends Fragment implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
-    //Constants
-    private static final String TAG = LoginActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 7;
-    public final static String USER_GOOGLE_ID = "es.udc.apm.classroommanagement.USER_GOOGLE_ID";
-    public final static String USER_MAIL = "es.udc.apm.classroommanagement.USER_MAIL";
-    public final static String USER_NAME = "es.udc.apm.classroommanagement.USER_NAME";
-    public final static String USER_SURNAME = "es.udc.apm.classroommanagement.USER_SURNAME";
 
     private GoogleApiClient mGoogleApiClient;
     private ProgressDialog mProgressDialog;
     private SignInButton btnSignIn;
     private UserService userService;
-    private DrawerLayout drawerLayout;
-    private NavigationView navView;
-    //private Toolbar appbar;
+
+    public LoginFragment() {
+        // Required empty public constructor
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    }
 
-        //appbar = (Toolbar)findViewById(R.id.appbar);
-        //setSupportActionBar(appbar);
-
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_nav_menu);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_login, container, false);
 
         userService = new UserService();
 
@@ -70,12 +63,12 @@ public class LoginActivity extends AppCompatActivity implements
                 .requestEmail()
                 .build();
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                .enableAutoManage(getActivity(), this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
+        btnSignIn = (SignInButton) view.findViewById(R.id.btn_sign_in);
         // Customizing G+ button
         //btnSignIn.setSize(SignInButton.SIZE_STANDARD);
         //btnSignIn.setScopes(gso.getScopeArray());
@@ -83,38 +76,24 @@ public class LoginActivity extends AppCompatActivity implements
         btnSignIn.setSize(SignInButton.SIZE_STANDARD);// listener for sign in button
         btnSignIn.setOnClickListener(this);
 
-        navView = (NavigationView)findViewById(R.id.navview);
-        navView.setNavigationItemSelectedListener(
-                new NavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+        return view;
+    }
 
-                        boolean fragmentTransaction = false;
-                        Fragment fragment = null;
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+//        if (context instanceof OnFragmentInteractionListener) {
+//            mListener = (OnFragmentInteractionListener) context;
+//        } else {
+//            throw new RuntimeException(context.toString()
+//                    + " must implement OnFragmentInteractionListener");
+//        }
+    }
 
-                        switch (menuItem.getItemId()) {
-                            case R.id.menu_seccion_1:
-                                Log.i("NavigationView","Seccion 1\n");
-                                break;
-                            case R.id.menu_seccion_2:
-                                Log.i("NavigationView","Seccion 2\n");
-                                break;
-                            case R.id.menu_seccion_3:
-                                Log.i("NavigationView","Seccion 3\n");
-                                break;
-                            case R.id.menu_opcion_1:
-                                Log.i("NavigationView", "Pulsada opción 1");
-                                break;
-                            case R.id.menu_opcion_2:
-                                Log.i("NavigationView", "Pulsada opción 2");
-                                break;
-                        }
-
-                        drawerLayout.closeDrawers();
-
-                        return true;
-                    }
-                });
+    @Override
+    public void onDetach() {
+        super.onDetach();
+//        mListener = null;
     }
 
     @Override
@@ -128,34 +107,9 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    //region Lateral menu
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-        switch(item.getItemId()) {
-            case android.R.id.home:
-                drawerLayout.openDrawer(GravityCompat.START);
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    //endregion
-
     private void signIn() {
-        if (!isOnline(getApplicationContext())) {
-            showToast(getApplicationContext(), getString(R.string.no_internet));
+        if (!isOnline(getActivity().getApplicationContext())) {
+            showToast(getActivity().getApplicationContext(), getString(R.string.no_internet));
         } else {
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
             startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -174,7 +128,7 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        logInfo(this, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
@@ -221,12 +175,12 @@ public class LoginActivity extends AppCompatActivity implements
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        logInfo(this, "onConnectionFailed:" + connectionResult);
     }
 
     private void showProgressDialog() {
         if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog = new ProgressDialog(getActivity());
             mProgressDialog.setMessage(getString(R.string.loading));
             mProgressDialog.setIndeterminate(true);
         }
@@ -241,7 +195,7 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     private void loginSuccess(GoogleSignInAccount acct) {
-        Log.i(TAG, "Login correcto");
+        logInfo(this, "Login correcto");
 
         String name = acct.getGivenName();
         String surname = acct.getFamilyName();
@@ -256,34 +210,45 @@ public class LoginActivity extends AppCompatActivity implements
                 throw new Exception("Error servicio usuario");
             }
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            showToast(getApplicationContext(), getString(R.string.connection_error));
+            logError(this,e);
+            showToast(getActivity().getApplicationContext(), getString(R.string.connection_error));
             return;
         }
+        //Data to share with the new fragment
+        Bundle bundle = new Bundle();
+        bundle.putString(USER_GOOGLE_ID, googleID);
+        bundle.putString(USER_MAIL, email);
+        bundle.putString(USER_NAME, name);
+        bundle.putString(USER_SURNAME, surname);
+        Fragment fragment = null;
 
         if (user != null && user.getGoogleId() != null) {
-            Log.d(TAG, "Name: " + name + "Surname: " + surname + ", email: " + email
-                    + ", Id: " + googleID);
-            Intent gpsLocationIntent = new Intent(this, GPSLocationActivity.class);
+            logInfo(this, "User registered");
+            //Intent gpsLocationIntent = new Intent(this, GPSLocationFragment.class);
             /*
             Como ya tenemos los datos de login podemos hacer un logout
              */
-            Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient);
-            startActivity(gpsLocationIntent);
+            //Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient);
+            //startActivity(gpsLocationIntent);
+            //TODO Anadir GPSLocationFragment
+            fragment = new RegisterFragment();
+            fragment.setArguments(bundle);
         } else {
-            Log.d(TAG, "Usuario no registrado: " + "Name: " + name + "Surname: " + surname + ", email: " + email
-                    + ", Id: " + googleID);
-            Intent registerIntent = new Intent(this, RegisterActivity.class);
-            Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient);
-            registerIntent.putExtra(USER_GOOGLE_ID, googleID);
-            registerIntent.putExtra(USER_MAIL, email);
-            registerIntent.putExtra(USER_NAME, name);
-            registerIntent.putExtra(USER_SURNAME, surname);
-            startActivity(registerIntent);
+            logInfo(this, "User not registered, creating db row");
+            fragment = new RegisterFragment();
+            fragment.setArguments(bundle);
         }
+
+        //Logout from google
+        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient);
+
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_frame,fragment)
+                .commit();
     }
 
     private void loginFail() {
-        Log.i(TAG, "Login incorrecto");
+        logInfo(this, "Login incorrecto");
     }
 }
+

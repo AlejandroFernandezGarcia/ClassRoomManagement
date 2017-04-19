@@ -31,18 +31,17 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBvK9G-d7XY4Jovs-O2Spe4ABC2iqHOC68" />
 
-        <activity android:name=".LoginActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".GPSLocationActivity" />
+        <activity android:name=".fragments.GPSLocationFragment" />
 
-        <activity android:name=".IndoorLocationActivity"></activity>
-        <activity android:name=".DatabaseActivity" />
-        <activity android:name=".activities.register.RegisterActivity"></activity>
+        <activity android:name=".fragments.IndoorLocationFragment"></activity>
+        <activity android:name=".fragments.RegisterFragment"></activity>
     </application>
 
 </manifest>

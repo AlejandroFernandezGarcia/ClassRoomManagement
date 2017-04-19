@@ -1,4 +1,4 @@
-package es.udc.apm.classroommanagement;
+package es.udc.apm.classroommanagement.fragments;
 
 
 import android.Manifest;
@@ -9,14 +9,13 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -34,21 +33,23 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import es.udc.apm.classroommanagement.daos.BuildingDao;
-import es.udc.apm.classroommanagement.objects.BuildingInfo;
+import es.udc.apm.classroommanagement.MainActivity;
+import es.udc.apm.classroommanagement.R;
+import es.udc.apm.classroommanagement.model.Building;
+import es.udc.apm.classroommanagement.services.BuildingService;
 
-public class GPSLocationActivity extends AppCompatActivity implements
+public class GPSLocationFragment extends Fragment implements
         GoogleApiClient.OnConnectionFailedListener,
         GoogleApiClient.ConnectionCallbacks,
-        LocationListener, OnMapReadyCallback,
-        View.OnClickListener{
+        LocationListener, OnMapReadyCallback {
 
     private static final int PETICION_PERMISO_LOCALIZACION = 101;
     private static final int PETICION_CONFIG_UBICACION = 201;
@@ -60,41 +61,39 @@ public class GPSLocationActivity extends AppCompatActivity implements
     private Marker personMarker;
 
     private Button change_mode_btn;
+    private BuildingService buildingService;
+
+    public GPSLocationFragment() {
+        // Required empty public constructor
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gps_location);
+        ((MainActivity)getActivity()).showLateralMenu(true);
+    }
 
-        apiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_gps_location, container, false);
+
+        buildingService = new BuildingService();
+
+        apiClient = new GoogleApiClient.Builder(getActivity())
+                .enableAutoManage(getActivity(), this)
                 .addConnectionCallbacks(this)
                 .addApi(LocationServices.API)
                 .build();
 
-        MapFragment mapFragment = (MapFragment) getFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
 
-        change_mode_btn = (Button)findViewById(R.id.change_mode_btn);
-        change_mode_btn.setOnClickListener(this);
-
         enableLocationUpdates();
 
-    }
+        return view;
 
-    @Override
-    public void onClick(View view) {
-
-        int id = view.getId();
-
-        switch (id){
-            case R.id.change_mode_btn:
-                Intent indoorLocationIntent = new Intent(this, IndoorLocationActivity.class);
-                startActivity(indoorLocationIntent);
-                break;
-        }
     }
 
     private void enableLocationUpdates() {
@@ -124,7 +123,7 @@ public class GPSLocationActivity extends AppCompatActivity implements
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                         try {
-                            status.startResolutionForResult(GPSLocationActivity.this, PETICION_CONFIG_UBICACION);
+                            status.startResolutionForResult(getActivity(), PETICION_CONFIG_UBICACION);
                         } catch (IntentSender.SendIntentException e) {
                             showToast("Error al intentar solucionar configuración de ubicación");
                         }
@@ -143,7 +142,7 @@ public class GPSLocationActivity extends AppCompatActivity implements
     }
 
     private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(GPSLocationActivity.this,
+        if (ActivityCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             //Ojo: estamos suponiendo que ya tenemos concedido el permiso.
@@ -151,7 +150,7 @@ public class GPSLocationActivity extends AppCompatActivity implements
 
 
             LocationServices.FusedLocationApi.requestLocationUpdates(
-                    apiClient, locRequest, GPSLocationActivity.this);
+                    apiClient, locRequest, GPSLocationFragment.this);
         }
     }
 
@@ -160,10 +159,10 @@ public class GPSLocationActivity extends AppCompatActivity implements
     public void onConnected(@Nullable Bundle bundle) {
         //Conectado correctamente a Google Play Services
 
-        if (ActivityCompat.checkSelfPermission(this,
+        if (ActivityCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this,
+            ActivityCompat.requestPermissions(getActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     PETICION_PERMISO_LOCALIZACION);
         } else {
@@ -219,7 +218,7 @@ public class GPSLocationActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case PETICION_CONFIG_UBICACION:
                 switch (resultCode) {
@@ -241,9 +240,9 @@ public class GPSLocationActivity extends AppCompatActivity implements
         movePersonMarker(location);
     }
 
-    private void showToast(String message){
+    private void showToast(String message) {
         Toast toast =
-                Toast.makeText(getApplicationContext(),
+                Toast.makeText(getActivity().getApplicationContext(),
                         message, Toast.LENGTH_SHORT);
 
         toast.show();
@@ -258,19 +257,18 @@ public class GPSLocationActivity extends AppCompatActivity implements
 
     }
 
-    private void moveMap(Location pos)
-    {
+    private void moveMap(Location pos) {
         CameraUpdate camUpd1 = CameraUpdateFactory.newLatLngZoom(new LatLng(pos.getLatitude(), pos.getLongitude()), 19);
         mapa.moveCamera(camUpd1);
     }
 
-    private void movePersonMarker(Location pos){
+    private void movePersonMarker(Location pos) {
 
         LatLng latLng = new LatLng(pos.getLatitude(), pos.getLongitude());
 
-        if(personMarker!=null){
+        if (personMarker != null) {
             personMarker.setPosition(latLng);
-        }else{
+        } else {
             personMarker = mapa.addMarker(new MarkerOptions()
                     .position(latLng)
                     .title("I am here")
@@ -278,12 +276,10 @@ public class GPSLocationActivity extends AppCompatActivity implements
         }
     }
 
-    private void drawBuildingsMarkers(){
+    private void drawBuildingsMarkers() {
+        List<Building> buildings = buildingService.getAllBuildings();
 
-        BuildingDao buildingDao = new BuildingDao();
-        ArrayList <BuildingInfo> buildings = buildingDao.getBuildings();
-
-        for (BuildingInfo building : buildings) {
+        for (Building building : buildings) {
             LatLng latLng = new LatLng(building.getLatitude(), building.getLongitude());
             mapa.addMarker(new MarkerOptions()
                     .position(latLng)

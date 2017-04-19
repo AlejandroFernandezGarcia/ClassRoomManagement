@@ -2,31 +2,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/menu_seccion_1"
-            android:icon="@drawable/ic_menu"
-            android:title="Secc1"/>
+            android:id="@+id/GpsLocation"
+            android:icon="@drawable/ic_menu_gps"
+            android:title="@string/menu_gps_location"/>
         <item
-            android:id="@+id/menu_seccion_2"
-            android:icon="@drawable/ic_menu"
-            android:title="Secc2"/>
+            android:id="@+id/IndoorLocation"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="@string/menu_indoor_location"/>
         <item
-            android:id="@+id/menu_seccion_3"
-            android:icon="@drawable/ic_menu"
-            android:title="Secc3"/>
+            android:id="@+id/UpdateProfile"
+            android:icon="@drawable/ic_menu_account"
+            android:title="@string/menu_update_profile"/>
+        <item
+            android:id="@+id/exit"
+            android:icon="@drawable/ic_menu_exit"
+            android:title="@string/menu_exit"/>
     </group>
-
-    <item
-        android:id="@+id/navigation_subheader"
-        android:title="Otras opciones">
-        <menu>
-            <item
-                android:id="@+id/menu_opcion_1"
-                android:icon="@drawable/ic_menu"
-                android:title="Op1"/>
-            <item
-                android:id="@+id/menu_opcion_2"
-                android:icon="@drawable/ic_menu"
-                android:title="Op2"/>
-        </menu>
-    </item>
 </menu>
