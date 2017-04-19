@@ -18,14 +18,14 @@ public class RoleDAO {
     private static final String TAG = RoleDAO.class.getSimpleName();
     private ConnectionManager connection;
 
-    public RoleDAO() throws SQLException {
-        this.connection = new ConnectionManager();
+    public RoleDAO() {
     }
 
     public List<Role> getAllRoles() {
         String query = "SELECT * FROM TROLE";
         List<Role> roles = new ArrayList<>();
         try {
+            this.connection = new ConnectionManager();
             this.connection.executeQuery(query);
             while (connection.getResult().next()) {
                 short id = connection.getResult().getShort("ROL_ID");
