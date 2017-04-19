@@ -2,6 +2,8 @@ package es.udc.apm.classroommanagement.dao;
 
 import android.util.Log;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.sql.SQLException;
 
 import es.udc.apm.classroommanagement.model.User;
@@ -16,14 +18,14 @@ public class UserDAO {
     private static final String TAG = UserDAO.class.getSimpleName();
     private ConnectionManager connection;
 
-    public UserDAO() throws SQLException {
-        this.connection = new ConnectionManager();
+    public UserDAO() {
     }
 
     public User getUser(String googleID) {
         String query = "SELECT * FROM TUSER WHERE TUSER.USER_GOOGLE_ID=".concat(googleID);
         User user = null;
         try {
+            this.connection = new ConnectionManager();
             this.connection.executeQuery(query);
             if (connection.getResult().next()) {
                 short id = connection.getResult().getShort("USER_ID");
@@ -44,5 +46,32 @@ public class UserDAO {
             }
         }
         return user;
+    }
+
+    public int insertUser(String googleID, String name, String surname, String mail, short roleID) {
+        String insert = "INSERT INTO TUSER (USER_GOOGLE_ID,USER_NAME,USER_LASTNAME,USER_MAIL,ROL_ID) VALUES (";
+        StringBuilder insertBuilder = new StringBuilder(insert);
+        String paramsArray[] = new String[4];
+        paramsArray[0] = googleID;
+        paramsArray[1] = name;
+        paramsArray[2] = surname;
+        paramsArray[3] = mail;
+        String join = "'" + StringUtils.join(paramsArray, "','") + "',";
+        insertBuilder.append(join);
+        insertBuilder.append(roleID).append(")");
+        int res = -1;
+        try {
+            this.connection = new ConnectionManager();
+            res = this.connection.insert(insertBuilder.toString());
+        } catch (SQLException e) {
+            Log.e(TAG, e.getMessage());
+        } finally {
+            try {
+                this.connection.closeConnection();
+            } catch (SQLException e) {
+                Log.e(TAG, e.getMessage());
+            }
+        }
+        return res;
     }
 }
