@@ -34,6 +34,7 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.android.support:support-v13:25.2.0'
     compile 'com.android.support.constraint:constraint-layout:+'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
     testCompile 'junit:junit:4.12'
 }
 

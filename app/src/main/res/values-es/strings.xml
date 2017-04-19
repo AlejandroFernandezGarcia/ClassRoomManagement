@@ -31,5 +31,11 @@
     <string name="surname_text">Apellidos</string>
     <string name="role_text">Rol</string>
     <string name="register_button">Terminado</string>
+    <string name="no_name_registered">Nombre no introducido</string>
+    <string name="no_surname_registered">Apellidos no introducidos</string>
+    <string name="confirm_registry">Confirmar Registro de Usuario</string>
+    <string name="confirmation_message">Por favor, confirme que los siguientes datos son correctos:\n- Nombre: %1$s \n- Apellidos: %2$s \n- Rol: %3$s</string>
+    <string name="confirm">Confirmar</string>
+    <string name="cancel">Cancelar</string>
 
 </resources>

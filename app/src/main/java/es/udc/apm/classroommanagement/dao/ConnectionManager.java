@@ -69,18 +69,18 @@ public class ConnectionManager {
         this.result = this.statement.executeQuery(query);
     }
 
-    public void update(String update) throws SQLException {
+    public int update(String update) throws SQLException {
         this.statement = connection.createStatement();
-        statement.executeUpdate(update);
+        return statement.executeUpdate(update);
     }
 
-    public void delete(String delete) throws SQLException {
+    public int delete(String delete) throws SQLException {
         this.statement = connection.createStatement();
-        statement.executeUpdate(delete);
+        return statement.executeUpdate(delete);
     }
 
     public int insert(String insert) throws SQLException {
-        Statement st = this.connection.createStatement();
-        return st.executeUpdate(insert);
+        this.statement = connection.createStatement();
+        return statement.executeUpdate(insert);
     }
 }

@@ -15,8 +15,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
-import com.google.android.gms.common.api.ResultCallback;
 
 import es.udc.apm.classroommanagement.activities.register.RegisterActivity;
 import es.udc.apm.classroommanagement.model.User;
@@ -34,6 +32,8 @@ public class LoginActivity extends AppCompatActivity implements
     private static final int RC_SIGN_IN = 7;
     public final static String USER_GOOGLE_ID = "es.udc.apm.classroommanagement.USER_GOOGLE_ID";
     public final static String USER_MAIL = "es.udc.apm.classroommanagement.USER_MAIL";
+    public final static String USER_NAME = "es.udc.apm.classroommanagement.USER_NAME";
+    public final static String USER_SURNAME = "es.udc.apm.classroommanagement.USER_SURNAME";
 
     private GoogleApiClient mGoogleApiClient;
     private ProgressDialog mProgressDialog;
@@ -47,10 +47,6 @@ public class LoginActivity extends AppCompatActivity implements
 
         userService = new UserService();
 
-        btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
-
-        btnSignIn.setOnClickListener(this);
-
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -60,11 +56,22 @@ public class LoginActivity extends AppCompatActivity implements
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
+        btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
         // Customizing G+ button
-        btnSignIn.setSize(SignInButton.SIZE_STANDARD);
-        btnSignIn.setScopes(gso.getScopeArray());
+        btnSignIn.setSize(SignInButton.SIZE_STANDARD);// listener for sign in button
+        btnSignIn.setOnClickListener(this);
     }
 
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+
+        switch (id) {
+            case R.id.btn_sign_in:
+                signIn();
+                break;
+        }
+    }
 
     private void signIn() {
         if (!isOnline(getApplicationContext())) {
@@ -72,6 +79,17 @@ public class LoginActivity extends AppCompatActivity implements
         } else {
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
             startActivityForResult(signInIntent, RC_SIGN_IN);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
         }
     }
 
@@ -87,60 +105,38 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        int id = v.getId();
 
-        switch (id) {
-            case R.id.btn_sign_in:
-                signIn();
-                break;
+    /* @Override
+     public void onStart() {
+         super.onStart();
 
-        }
-    }
+         if (!isOnline(getApplicationContext())) {
+             showToast(getApplicationContext(), getString(R.string.no_internet));
+         } else {
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
-        }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        if (!isOnline(getApplicationContext())) {
-            showToast(getApplicationContext(), getString(R.string.no_internet));
-        } else {
-
-            OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-            if (opr.isDone()) {
-                // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
-                // and the GoogleSignInResult will be available instantly.
-                Log.d(TAG, "Got cached sign-in");
-                GoogleSignInResult result = opr.get();
-                handleSignInResult(result);
-            } else {
-                // If the user has not previously signed in on this device or the sign-in has expired,
-                // this asynchronous branch will attempt to sign in the user silently.  Cross-device
-                // single sign-on will occur in this branch.
-                showProgressDialog();
-                opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-                    @Override
-                    public void onResult(GoogleSignInResult googleSignInResult) {
-                        hideProgressDialog();
-                        handleSignInResult(googleSignInResult);
-                    }
-                });
-            }
-        }
-    }
-
+             OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+             if (opr.isDone()) {
+                 // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
+                 // and the GoogleSignInResult will be available instantly.
+                 Log.d(TAG, "Got cached sign-in");
+                 GoogleSignInResult result = opr.get();
+                 handleSignInResult(result);
+             } else {
+                 // If the user has not previously signed in on this device or the sign-in has expired,
+                 // this asynchronous branch will attempt to sign in the user silently.  Cross-device
+                 // single sign-on will occur in this branch.
+                 showProgressDialog();
+                 opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                     @Override
+                     public void onResult(GoogleSignInResult googleSignInResult) {
+                         hideProgressDialog();
+                         handleSignInResult(googleSignInResult);
+                     }
+                 });
+             }
+         }
+     }
+ */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
@@ -167,16 +163,17 @@ public class LoginActivity extends AppCompatActivity implements
     private void loginSuccess(GoogleSignInAccount acct) {
         Log.i(TAG, "Login correcto");
 
-        String name = acct.getDisplayName();
+        String name = acct.getGivenName();
+        String surname = acct.getFamilyName();
         String email = acct.getEmail();
         String googleID = acct.getId();
         User user = null;
 
         try {
             if (userService != null) {
-                user = userService.execute(googleID).get();
+                user = userService.getUser(googleID);
             } else {
-                throw new Exception();
+                throw new Exception("Error servicio usuario");
             }
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -184,8 +181,8 @@ public class LoginActivity extends AppCompatActivity implements
             return;
         }
 
-        if (user != null && user.getId() >= 0 && user.getGoogleId() != null) {
-            Log.d(TAG, "Name: " + name + ", email: " + email
+        if (user != null && user.getGoogleId() != null) {
+            Log.d(TAG, "Name: " + name + "Surname: " + surname + ", email: " + email
                     + ", Id: " + googleID);
             Intent gpsLocationIntent = new Intent(this, GPSLocationActivity.class);
             /*
@@ -194,12 +191,14 @@ public class LoginActivity extends AppCompatActivity implements
             Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient);
             startActivity(gpsLocationIntent);
         } else {
-            Log.d(TAG, "Usuario no registrado: " + "Name: " + name + ", email: " + email
+            Log.d(TAG, "Usuario no registrado: " + "Name: " + name + "Surname: " + surname + ", email: " + email
                     + ", Id: " + googleID);
             Intent registerIntent = new Intent(this, RegisterActivity.class);
             Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient);
             registerIntent.putExtra(USER_GOOGLE_ID, googleID);
             registerIntent.putExtra(USER_MAIL, email);
+            registerIntent.putExtra(USER_NAME, name);
+            registerIntent.putExtra(USER_SURNAME, surname);
             startActivity(registerIntent);
         }
     }

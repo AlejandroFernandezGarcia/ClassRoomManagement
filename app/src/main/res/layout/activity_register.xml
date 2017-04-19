@@ -13,16 +13,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="@string/name_text" />
+        android:hint="@string/name_text"
+        android:inputType="textPersonName">
+
+        <requestFocus />
+    </EditText>
 
     <EditText
         android:id="@+id/surname_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="@string/surname_text" />
+        android:hint="@string/surname_text"
+        android:inputType="textPersonName" />
 
     <Spinner
         android:id="@+id/role_spinner"
@@ -36,6 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="0dp"
+        android:layout_marginTop="35dp"
         android:text="@string/register_button"
         android:textStyle="bold" />
 
