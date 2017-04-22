@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -201,16 +202,31 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         String surname = acct.getFamilyName();
         String email = acct.getEmail();
         String googleID = acct.getId();
+
+        //region Store in session variables and set name to lateral menu
+        TextView txtView = (TextView) getActivity().findViewById(R.id.user_name);
+        txtView.setText(name);
+        ((MainActivity) getActivity()).setUserName(name.length() != 0 ? name : getString(R.string.user_without_name));
+        ((MainActivity) getActivity()).setGoogleId(googleID);
+
+        //endregion
+
         User user = null;
 
         try {
             if (userService != null) {
                 user = userService.getUser(googleID);
+                if(user != null){
+                    name = user.getName();
+                    surname = user.getLastName();
+                    email = user.getMail();
+                    googleID=user.getGoogleId();
+                }
             } else {
                 throw new Exception("Error servicio usuario");
             }
         } catch (Exception e) {
-            logError(this,e);
+            logError(this, e);
             showToast(getActivity().getApplicationContext(), getString(R.string.connection_error));
             return;
         }
@@ -224,15 +240,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
 
         if (user != null && user.getGoogleId() != null) {
             logInfo(this, "User registered");
-            //Intent gpsLocationIntent = new Intent(this, GPSLocationFragment.class);
-            /*
-            Como ya tenemos los datos de login podemos hacer un logout
-             */
-            //Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient);
-            //startActivity(gpsLocationIntent);
-            //TODO Anadir GPSLocationFragment
-            fragment = new RegisterFragment();
-            fragment.setArguments(bundle);
+            fragment = new GPSLocationFragment();
         } else {
             logInfo(this, "User not registered, creating db row");
             fragment = new RegisterFragment();
@@ -241,9 +249,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
 
         //Logout from google
         Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient);
+        mGoogleApiClient.stopAutoManage(getActivity());
+        mGoogleApiClient.disconnect();
 
         getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame,fragment)
+                .replace(R.id.content_frame, fragment)
                 .commit();
     }
 

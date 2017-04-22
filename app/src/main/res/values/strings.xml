@@ -28,6 +28,7 @@
     <string name="connection_error">Connection error.</string>
     <string name="fetch_cancelled">Fetch cancelled.</string>
     <string name="name_text">Name</string>
+    <string name="user_without_name">Not name user</string>
     <string name="surname_text">Surname</string>
     <string name="role_text">Role</string>
     <string name="register_button">Finished</string>

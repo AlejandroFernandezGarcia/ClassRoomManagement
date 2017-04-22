@@ -17,6 +17,7 @@ import java.util.List;
 import es.udc.apm.classroommanagement.MainActivity;
 import es.udc.apm.classroommanagement.R;
 import es.udc.apm.classroommanagement.model.Role;
+import es.udc.apm.classroommanagement.model.User;
 import es.udc.apm.classroommanagement.services.RoleService;
 import es.udc.apm.classroommanagement.services.UserService;
 import es.udc.apm.classroommanagement.utils.Constants;
@@ -31,6 +32,7 @@ public class RegisterFragment extends Fragment {
     private static String userMail;
     private static String name;
     private static String surname;
+    private User user;
 
     private RoleService roleService;
     private UserService userService;
@@ -46,7 +48,17 @@ public class RegisterFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((MainActivity)getActivity()).showLateralMenu(true);
+        ((MainActivity) getActivity()).showLateralMenu(true);
+        roleService = new RoleService();
+        userService = new UserService();
+        if (getArguments() == null) {
+            try {
+                user = userService.getUser(((MainActivity) getActivity()).getGoogleId());
+            } catch (Exception e) {
+                logError(this, e);
+                showToast(getActivity().getApplicationContext(), getString(R.string.connection_error));
+            }
+        }
     }
 
 
@@ -58,14 +70,20 @@ public class RegisterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_register, container, false);
-        //FIXME Si se llega aqui a traves del menu estos arguments no existen
-        userGoogleID = getArguments().getString(Constants.USER_GOOGLE_ID);
-        userMail = getArguments().getString(Constants.USER_MAIL);
-        name = getArguments().getString(Constants.USER_NAME);
-        surname = getArguments().getString(Constants.USER_SURNAME);
-
-        roleService = new RoleService();
-        userService = new UserService();
+        //Load data in the form using the data from the LoginFragment or
+        //the db if the user exist in it
+        Bundle b = getArguments();
+        if (b != null) {
+            userGoogleID = b.getString(Constants.USER_GOOGLE_ID);
+            userMail = b.getString(Constants.USER_MAIL);
+            name = b.getString(Constants.USER_NAME);
+            surname = b.getString(Constants.USER_SURNAME);
+        } else {
+            userGoogleID = user.getGoogleId();
+            userMail = user.getMail();
+            name = user.getName();
+            surname = user.getLastName();
+        }
 
         roleSpinner = (Spinner) view.findViewById(R.id.role_spinner);
 
@@ -104,7 +122,7 @@ public class RegisterFragment extends Fragment {
                 throw new Exception();
             }
         } catch (Exception e) {
-            logError(this,e);
+            logError(this, e);
             showToast(getActivity().getApplicationContext(), getString(R.string.connection_error));
             return;
         }
@@ -159,16 +177,15 @@ public class RegisterFragment extends Fragment {
                                     throw new Exception();
                                 }
                             } catch (Exception e) {
-                                logError(this,e);
+                                logError(this, e);
                                 confirmed = false;
                                 showToast(getActivity().getApplicationContext(), getString(R.string.connection_error));
                                 return;
                             }
                             dialog.cancel();
                             if (confirmed) {
-//                                Intent gpsLocationIntent = new Intent(RegisterFragment.this, GPSLocationFragment.class);
-//                                startActivity(gpsLocationIntent);
-                                //TODO Gps fragment
+                                getActivity().getSupportFragmentManager()
+                                        .beginTransaction().replace(R.id.content_frame, new GPSLocationFragment()).commit();
                             }
 
                         }

@@ -60,7 +60,6 @@ public class GPSLocationFragment extends Fragment implements
     private GoogleMap mapa;
     private Marker personMarker;
 
-    private Button change_mode_btn;
     private BuildingService buildingService;
 
     public GPSLocationFragment() {
@@ -71,6 +70,7 @@ public class GPSLocationFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((MainActivity)getActivity()).showLateralMenu(true);
+        buildingService = new BuildingService();
     }
 
     @Override
@@ -78,7 +78,6 @@ public class GPSLocationFragment extends Fragment implements
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_gps_location, container, false);
 
-        buildingService = new BuildingService();
 
         apiClient = new GoogleApiClient.Builder(getActivity())
                 .enableAutoManage(getActivity(), this)
@@ -86,7 +85,7 @@ public class GPSLocationFragment extends Fragment implements
                 .addApi(LocationServices.API)
                 .build();
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
 
