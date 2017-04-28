@@ -48,16 +48,18 @@ public class RegisterFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((MainActivity) getActivity()).showLateralMenu(true);
         roleService = new RoleService();
         userService = new UserService();
         if (getArguments() == null) {
             try {
                 user = userService.getUser(((MainActivity) getActivity()).getGoogleId());
+                ((MainActivity) getActivity()).showLateralMenu(true);
             } catch (Exception e) {
                 logError(this, e);
                 showToast(getActivity().getApplicationContext(), getString(R.string.connection_error));
             }
+        }else{
+            ((MainActivity) getActivity()).showLateralMenu(false);
         }
     }
 
