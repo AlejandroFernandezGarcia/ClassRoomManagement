@@ -8,7 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:src="@drawable/navheader"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/lateral_menu_header" />
 
     <TextView
         android:id="@+id/user_name"

@@ -7,15 +7,13 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -31,7 +29,6 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -45,6 +42,9 @@ import es.udc.apm.classroommanagement.MainActivity;
 import es.udc.apm.classroommanagement.R;
 import es.udc.apm.classroommanagement.model.Building;
 import es.udc.apm.classroommanagement.services.BuildingService;
+
+import static es.udc.apm.classroommanagement.utils.Utils.logError;
+import static es.udc.apm.classroommanagement.utils.Utils.showToast;
 
 public class GPSLocationFragment extends Fragment implements
         GoogleApiClient.OnConnectionFailedListener,
@@ -69,7 +69,7 @@ public class GPSLocationFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((MainActivity)getActivity()).showLateralMenu(true);
+        ((MainActivity) getActivity()).showLateralMenu(true);
         buildingService = new BuildingService();
     }
 
@@ -124,12 +124,12 @@ public class GPSLocationFragment extends Fragment implements
                         try {
                             status.startResolutionForResult(getActivity(), PETICION_CONFIG_UBICACION);
                         } catch (IntentSender.SendIntentException e) {
-                            showToast("Error al intentar solucionar configuración de ubicación");
+                            showToast(getActivity().getApplicationContext(), "Error al intentar solucionar configuración de ubicación");
                         }
 
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        showToast("No se puede cumplir la configuración de ubicación necesaria");
+                        showToast(getActivity().getApplicationContext(), "No se puede cumplir la configuración de ubicación necesaria");
                         break;
                 }
             }
@@ -181,7 +181,7 @@ public class GPSLocationFragment extends Fragment implements
         //Se ha producido un error que no se puede resolver automáticamente
         //y la conexión con los Google Play Services no se ha establecido.
 
-        showToast(getString(R.string.google_services_fail));
+        showToast(getActivity().getApplicationContext(), getString(R.string.google_services_fail));
     }
 
 
@@ -189,7 +189,7 @@ public class GPSLocationFragment extends Fragment implements
     public void onConnectionSuspended(int i) {
         //Se ha interrumpido la conexión con Google Play Services
 
-        showToast(getString(R.string.google_services_suspended));
+        showToast(getActivity().getApplicationContext(), getString(R.string.google_services_suspended));
     }
 
     @Override
@@ -211,7 +211,7 @@ public class GPSLocationFragment extends Fragment implements
                 //Permiso denegado:
                 //Deberíamos deshabilitar toda la funcionalidad relativa a la localización.
 
-                showToast(getString(R.string.no_gps_permission));
+                showToast(getActivity().getApplicationContext(), getString(R.string.no_gps_permission));
             }
         }
     }
@@ -225,7 +225,7 @@ public class GPSLocationFragment extends Fragment implements
                         startLocationUpdates();
                         break;
                     case Activity.RESULT_CANCELED:
-                        showToast("El usuario no ha realizado los cambios de configuración necesarios");
+                        showToast(getActivity().getApplicationContext(), "El usuario no ha realizado los cambios de configuración necesarios");
                         break;
                 }
                 break;
@@ -237,14 +237,6 @@ public class GPSLocationFragment extends Fragment implements
 
         moveMap(location);
         movePersonMarker(location);
-    }
-
-    private void showToast(String message) {
-        Toast toast =
-                Toast.makeText(getActivity().getApplicationContext(),
-                        message, Toast.LENGTH_SHORT);
-
-        toast.show();
     }
 
     @Override
@@ -276,7 +268,13 @@ public class GPSLocationFragment extends Fragment implements
     }
 
     private void drawBuildingsMarkers() {
-        List<Building> buildings = buildingService.getAllBuildings();
+        List<Building> buildings = null;
+        try {
+            buildings = buildingService.getAllBuildings();
+        } catch (Exception e) {
+            logError(this, e);
+            showToast(getActivity().getApplicationContext(), getString(R.string.connection_error));
+        }
 
         for (Building building : buildings) {
             LatLng latLng = new LatLng(building.getLatitude(), building.getLongitude());

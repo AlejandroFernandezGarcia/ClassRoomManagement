@@ -44,5 +44,6 @@
     <string name="menu_indoor_location">Indoor</string>
     <string name="menu_update_profile">Profile</string>
     <string name="menu_exit">Exit</string>
+    <string name="lateral_menu_header">Lateral menu header</string>
 
 </resources>
