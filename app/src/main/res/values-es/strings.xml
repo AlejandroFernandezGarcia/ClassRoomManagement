@@ -35,7 +35,7 @@
     <string name="no_name_registered">Nombre no introducido</string>
     <string name="no_surname_registered">Apellidos no introducidos</string>
     <string name="confirm_registry">Confirmar Registro de Usuario</string>
-    <string name="confirmation_message">Por favor, confirme que los siguientes datos son correctos:\n- Nombre: %1$s \n- Apellidos: %2$s \n- Rol: %3$s</string>
+    <string name="confirmation_message">Por favor, confirme que los siguientes datos son correctos:\n- Nombre: %1$s \n- Apellidos: %2$s \n- Email: %3$s \n- Rol: %4$s</string>
     <string name="confirm">Confirmar</string>
     <string name="cancel">Cancelar</string>
 
@@ -45,5 +45,6 @@
     <string name="menu_update_profile">Perfil</string>
     <string name="menu_exit">Salir</string>
     <string name="lateral_menu_header">Cabecera menú lateral</string>
+    <string name="update_confirmation">Su perfil se ha actualizado correctamente.</string>
 
 </resources>

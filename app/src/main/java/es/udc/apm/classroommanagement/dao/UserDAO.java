@@ -74,4 +74,27 @@ public class UserDAO {
         }
         return res;
     }
+
+    public int updateUser(short id, String name, String surname, short roleID) {
+        String update = "UPDATE TUSER SET";
+        StringBuilder updateBuilder = new StringBuilder(update);
+        updateBuilder.append(" USER_NAME = ").append("'").append(name).append("'");
+        updateBuilder.append(", USER_LASTNAME = ").append("'").append(surname).append("'");
+        updateBuilder.append(", ROL_ID = ").append(roleID);
+        updateBuilder.append(" WHERE USER_ID = ").append(id);
+        int res = -1;
+        try {
+            this.connection = new ConnectionManager();
+            res = this.connection.update(updateBuilder.toString());
+        } catch (SQLException e) {
+            Log.e(TAG, e.getMessage());
+        } finally {
+            try {
+                this.connection.closeConnection();
+            } catch (SQLException e) {
+                Log.e(TAG, e.getMessage());
+            }
+        }
+        return res;
+    }
 }
