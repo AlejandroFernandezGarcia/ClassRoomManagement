@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,18 +33,21 @@ public class RegisterFragment extends Fragment {
     private static String userMail;
     private static String name;
     private static String surname;
-    private User user;
+    private User user = null;
 
     private RoleService roleService;
     private UserService userService;
 
     //Form elements for validation
     private Button registryButton;
-    EditText editName, editSurname;
+    EditText editName, editSurname, emailText;
     private Spinner roleSpinner;
 
     // Confirmation of new user
     private boolean confirmed = false;
+
+    // Profile modification
+    private boolean isModfication = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,11 +58,12 @@ public class RegisterFragment extends Fragment {
             try {
                 user = userService.getUser(((MainActivity) getActivity()).getGoogleId());
                 ((MainActivity) getActivity()).showLateralMenu(true);
+                isModfication = true;
             } catch (Exception e) {
                 logError(this, e);
                 showToast(getActivity().getApplicationContext(), getString(R.string.connection_error));
             }
-        }else{
+        } else {
             ((MainActivity) getActivity()).showLateralMenu(false);
         }
     }
@@ -91,12 +96,18 @@ public class RegisterFragment extends Fragment {
 
         addItemsToSpinner();
 
+        if (isModfication) {
+            setSelectedRole();
+        }
+
         editName = (EditText) view.findViewById(R.id.name_text);
         editSurname = (EditText) view.findViewById(R.id.surname_text);
+        emailText = (EditText) view.findViewById(R.id.email_text);
 
         editName.setText(name);
         editSurname.setText(surname);
-
+        emailText.setText(userMail);
+        emailText.setEnabled(false);
 
         registryButton = (Button) view.findViewById(R.id.register_button);
 
@@ -132,7 +143,17 @@ public class RegisterFragment extends Fragment {
         ArrayAdapter<Role> dataAdapter = new ArrayAdapter<Role>(this.getActivity(), android.R.layout.simple_spinner_item, roles);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         roleSpinner.setAdapter(dataAdapter);
+    }
 
+    private void setSelectedRole() {
+        Adapter adapter = roleSpinner.getAdapter();
+        int n = adapter.getCount();
+        for (int i = 0; i < n; i++) {
+            if (((Role) adapter.getItem(i)).getId() == user.getRoleId()) {
+                roleSpinner.setSelection(i);
+                break;
+            }
+        }
     }
 
     private void onRegisterButtonClick() {
@@ -166,14 +187,18 @@ public class RegisterFragment extends Fragment {
         if (validated) {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
             alertDialogBuilder.setTitle(getString(R.string.confirm_registry));
-            alertDialogBuilder.setMessage(getString(R.string.confirmation_message, name, surname, selectedRole.getRoleName())).setCancelable(false)
+            alertDialogBuilder.setMessage(getString(R.string.confirmation_message, name, surname, userMail, selectedRole.getRoleName())).setCancelable(false)
                     .setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // if this button is clicked, save user in database
                             try {
                                 if (userService != null) {
                                     //TODO Comprobar si existe, si existe actualiza sino inserta
-                                    userService.insertUser(userGoogleID, name, surname, userMail, selectedRole.getId());
+                                    if (isModfication && user != null) {
+                                        userService.updateUser(user.getId(), name, surname, selectedRole.getId());
+                                    } else {
+                                        userService.insertUser(userGoogleID, name, surname, userMail, selectedRole.getId());
+                                    }
                                     confirmed = true;
                                 } else {
                                     throw new Exception();
@@ -186,8 +211,12 @@ public class RegisterFragment extends Fragment {
                             }
                             dialog.cancel();
                             if (confirmed) {
-                                getActivity().getSupportFragmentManager()
-                                        .beginTransaction().replace(R.id.content_frame, new GPSLocationFragment()).commit();
+                                if (isModfication) {
+                                    showToast(getActivity().getApplicationContext(), getString(R.string.update_confirmation));
+                                } else {
+                                    getActivity().getSupportFragmentManager()
+                                            .beginTransaction().replace(R.id.content_frame, new GPSLocationFragment()).commit();
+                                }
                             }
 
                         }

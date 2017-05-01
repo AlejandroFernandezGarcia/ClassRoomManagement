@@ -12,6 +12,8 @@
         android:id="@+id/name_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:elevation="5dp"
         android:ems="10"
         android:hint="@string/name_text"
         android:inputType="textPersonName">
@@ -23,14 +25,28 @@
         android:id="@+id/surname_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:elevation="5dp"
         android:ems="10"
         android:hint="@string/surname_text"
         android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/email_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:elevation="5dp"
+        android:ems="10"
+        android:inputType="none" />
+
 
     <Spinner
         android:id="@+id/role_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:elevation="5dp"
         android:text="@string/role_text" />
 
     <Button
@@ -38,10 +54,12 @@
         style="@style/Widget.AppCompat.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="0dp"
         android:layout_marginTop="35dp"
+        android:elevation="5dp"
         android:text="@string/register_button"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="#FFF"
+        android:background="@drawable/selector_xml_button_register" />
 
 
 </LinearLayout>

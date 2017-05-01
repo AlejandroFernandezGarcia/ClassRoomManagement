@@ -35,7 +35,7 @@
     <string name="no_name_registered">First name not entered</string>
     <string name="no_surname_registered">Surname not entered</string>
     <string name="confirm_registry">Confirm User Registry</string>
-    <string name="confirmation_message">Please confirm that the following data is correct:\n- Name: %1$s \n- Surname: %2$s \n- Role: %3$s</string>
+    <string name="confirmation_message">Please confirm that the following data is correct:\n- Name: %1$s \n- Surname: %2$s \n- Email: %3$s \n- Role: %4$s</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
 
@@ -45,5 +45,6 @@
     <string name="menu_update_profile">Profile</string>
     <string name="menu_exit">Exit</string>
     <string name="lateral_menu_header">Lateral menu header</string>
+    <string name="update_confirmation">Your profile has been updated correctly.</string>
 
 </resources>

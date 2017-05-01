@@ -45,6 +45,20 @@ public class UserService {
         }
     }
 
+    public void updateUser(short id, String name, String surname, short roleID) throws Exception {
+        UpdateUserTask updateUserTask = new UpdateUserTask();
+        List<String> params = new ArrayList<>();
+        params.add(String.valueOf(id));
+        params.add(name);
+        params.add(surname);
+        params.add(String.valueOf(roleID));
+        int updateResult = updateUserTask.execute(params).get();
+        updateUserTask = null;
+        if (updateResult != 1) {
+            throw new Exception("Error al actualizar los datos del usuario");
+        }
+    }
+
     /**
      * Searches for the user by google ID.
      */
@@ -72,6 +86,18 @@ public class UserService {
 
         }
 
+    }
+
+    private class UpdateUserTask extends AsyncTask<List<String>, Void, Integer> {
+        @Override
+        protected Integer doInBackground(List<String>... params) {
+            if (userDao == null) {
+                userDao = new UserDAO();
+            }
+            List<String> userUpdateFields = params[0];
+            return userDao.updateUser(Short.parseShort(userUpdateFields.get(0)), userUpdateFields.get(1), userUpdateFields.get(2), Short.parseShort(userUpdateFields.get(3)));
+
+        }
     }
 
 
