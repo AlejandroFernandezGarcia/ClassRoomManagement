@@ -243,13 +243,14 @@ public class GPSLocationFragment extends Fragment implements
     public void onMapReady(GoogleMap map) {
 
         mapa = map;
-        //mapa.getUiSettings().setZoomControlsEnabled(true);
+        mapa.getUiSettings().setZoomControlsEnabled(true);
         drawBuildingsMarkers();
 
     }
 
     private void moveMap(Location pos) {
-        CameraUpdate camUpd1 = CameraUpdateFactory.newLatLngZoom(new LatLng(pos.getLatitude(), pos.getLongitude()), 19);
+        float zoom = mapa.getCameraPosition().zoom;
+        CameraUpdate camUpd1 = CameraUpdateFactory.newLatLngZoom(new LatLng(pos.getLatitude(), pos.getLongitude()), zoom);
         mapa.moveCamera(camUpd1);
     }
 
