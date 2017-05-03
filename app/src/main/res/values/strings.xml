@@ -31,7 +31,7 @@
     <string name="user_without_name">Not name user</string>
     <string name="surname_text">Surname</string>
     <string name="role_text">Role</string>
-    <string name="register_button">Finished</string>
+    <string name="register_button">Save</string>
     <string name="no_name_registered">First name not entered</string>
     <string name="no_surname_registered">Surname not entered</string>
     <string name="confirm_registry">Confirm User Registry</string>
