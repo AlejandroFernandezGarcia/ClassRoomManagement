@@ -139,7 +139,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void showLateralMenu(boolean show){
+    public void showLateralMenu(boolean show) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(show);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerLayout.setDrawerLockMode(show ? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
     }
 }
