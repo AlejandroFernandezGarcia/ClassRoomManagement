@@ -1,1 +1,5 @@
 # ClassRoomManagement
+
+Información General
+--------------
+

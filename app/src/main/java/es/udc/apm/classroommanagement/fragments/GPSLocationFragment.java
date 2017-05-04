@@ -78,18 +78,17 @@ public class GPSLocationFragment extends Fragment implements
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_gps_location, container, false);
 
-
         apiClient = new GoogleApiClient.Builder(getActivity())
                 .enableAutoManage(getActivity(), this)
                 .addConnectionCallbacks(this)
                 .addApi(LocationServices.API)
                 .build();
 
+        enableLocationUpdates();
+
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
-
-        enableLocationUpdates();
 
         return view;
 
@@ -169,11 +168,20 @@ public class GPSLocationFragment extends Fragment implements
             Location lastLocation =
                     LocationServices.FusedLocationApi.getLastLocation(apiClient);
 
-            moveMap(lastLocation);
-            movePersonMarker(lastLocation);
+            if (lastLocation != null) {
+                moveMap(lastLocation);
+                movePersonMarker(lastLocation);
+            } else {
+                startLocationUpdates();
+            }
         }
 
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        disableLocationUpdates();
     }
 
     @Override
@@ -234,9 +242,10 @@ public class GPSLocationFragment extends Fragment implements
 
     @Override
     public void onLocationChanged(Location location) {
-
         moveMap(location);
         movePersonMarker(location);
+        //remove location callback:
+        disableLocationUpdates();
     }
 
     @Override
