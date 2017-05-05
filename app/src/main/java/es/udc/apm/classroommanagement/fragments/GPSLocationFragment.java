@@ -11,10 +11,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.util.DebugUtils;
+import android.util.Log;
+import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -59,8 +65,9 @@ public class GPSLocationFragment extends Fragment implements
     private LocationRequest locRequest;
     private GoogleMap mapa;
     private Marker personMarker;
-
+    private SupportMapFragment mapFragment;
     private BuildingService buildingService;
+    private View view = null;
 
     public GPSLocationFragment() {
         // Required empty public constructor
@@ -76,22 +83,35 @@ public class GPSLocationFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_gps_location, container, false);
 
-        apiClient = new GoogleApiClient.Builder(getActivity())
-                .enableAutoManage(getActivity(), this)
-                .addConnectionCallbacks(this)
-                .addApi(LocationServices.API)
-                .build();
+        if (container == null) {
+            return null;
+        }
 
-        enableLocationUpdates();
+        if (view != null) {
+            ViewGroup parent = (ViewGroup) view.getParent();
+            if (parent != null)
+                parent.removeView(view);
+        }
+        try {
+            view = inflater.inflate(R.layout.fragment_gps_location, container, false);
+            apiClient = new GoogleApiClient.Builder(getActivity())
+                    .enableAutoManage(getActivity(), this)
+                    .addConnectionCallbacks(this)
+                    .addApi(LocationServices.API)
+                    .build();
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+            enableLocationUpdates();
 
-        mapFragment.getMapAsync(this);
+            mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+
+            mapFragment.getMapAsync(this);
+
+        } catch (InflateException e) {
+            Log.e("", e.getMessage());
+        }
 
         return view;
-
     }
 
     private void enableLocationUpdates() {
@@ -293,5 +313,18 @@ public class GPSLocationFragment extends Fragment implements
                     .title(building.getName())
                     .snippet(building.getInfoString()));
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+
+        Fragment fragment = mapFragment;
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.remove(fragment);
+        ft.commit();
+        apiClient.stopAutoManage(getActivity());
+        apiClient.disconnect();
     }
 }
