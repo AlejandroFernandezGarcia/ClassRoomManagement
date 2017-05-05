@@ -3,10 +3,12 @@ package es.udc.apm.classroommanagement.fragments;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -114,61 +116,88 @@ public class GPSLocationFragment extends Fragment implements
         return view;
     }
 
+    private boolean isLocationServiceEnabled(){
+        Context context = getActivity().getApplicationContext();
+        LocationManager locationManager = null;
+        boolean gps_enabled= false,network_enabled = false;
+
+        if(locationManager ==null)
+            locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        try{
+            gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        }catch(Exception ex){}
+
+        try{
+            network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        }catch(Exception ex){}
+
+        return gps_enabled || network_enabled;
+
+    }
+
     private void enableLocationUpdates() {
+        if (isLocationServiceEnabled()) {
+            locRequest = new LocationRequest();
+            locRequest.setInterval(2000);
+            locRequest.setFastestInterval(1000);
+            locRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        locRequest = new LocationRequest();
-        locRequest.setInterval(2000);
-        locRequest.setFastestInterval(1000);
-        locRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            LocationSettingsRequest locSettingsRequest =
+                    new LocationSettingsRequest.Builder()
+                            .addLocationRequest(locRequest)
+                            .build();
 
-        LocationSettingsRequest locSettingsRequest =
-                new LocationSettingsRequest.Builder()
-                        .addLocationRequest(locRequest)
-                        .build();
+            PendingResult<LocationSettingsResult> result =
+                    LocationServices.SettingsApi.checkLocationSettings(
+                            apiClient, locSettingsRequest);
 
-        PendingResult<LocationSettingsResult> result =
-                LocationServices.SettingsApi.checkLocationSettings(
-                        apiClient, locSettingsRequest);
+            result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+                @Override
+                public void onResult(LocationSettingsResult locationSettingsResult) {
+                    final Status status = locationSettingsResult.getStatus();
+                    switch (status.getStatusCode()) {
+                        case LocationSettingsStatusCodes.SUCCESS:
+                            startLocationUpdates();
 
-        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-            @Override
-            public void onResult(LocationSettingsResult locationSettingsResult) {
-                final Status status = locationSettingsResult.getStatus();
-                switch (status.getStatusCode()) {
-                    case LocationSettingsStatusCodes.SUCCESS:
-                        startLocationUpdates();
+                            break;
+                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                            try {
+                                status.startResolutionForResult(getActivity(), PETICION_CONFIG_UBICACION);
+                            } catch (IntentSender.SendIntentException e) {
+                                showToast(getActivity().getApplicationContext(), "Error al intentar solucionar configuración de ubicación");
+                            }
 
-                        break;
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        try {
-                            status.startResolutionForResult(getActivity(), PETICION_CONFIG_UBICACION);
-                        } catch (IntentSender.SendIntentException e) {
-                            showToast(getActivity().getApplicationContext(), "Error al intentar solucionar configuración de ubicación");
-                        }
-
-                        break;
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        showToast(getActivity().getApplicationContext(), "No se puede cumplir la configuración de ubicación necesaria");
-                        break;
+                            break;
+                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                            showToast(getActivity().getApplicationContext(), "No se puede cumplir la configuración de ubicación necesaria");
+                            break;
+                    }
                 }
-            }
-        });
+            });
+        }
+        else{
+            showToast(getActivity().getApplicationContext(), "El GPS está deshabilitado.");
+        }
     }
 
     private void disableLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(apiClient, this);
+        if (isLocationServiceEnabled()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(apiClient, this);
+        }
     }
 
     private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (isLocationServiceEnabled()) {
+            if (ActivityCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            //Ojo: estamos suponiendo que ya tenemos concedido el permiso.
-            //Sería recomendable implementar la posible petición en caso de no tenerlo.
+                //Ojo: estamos suponiendo que ya tenemos concedido el permiso.
+                //Sería recomendable implementar la posible petición en caso de no tenerlo.
 
 
-            LocationServices.FusedLocationApi.requestLocationUpdates(
-                    apiClient, locRequest, GPSLocationFragment.this);
+                LocationServices.FusedLocationApi.requestLocationUpdates(
+                        apiClient, locRequest, GPSLocationFragment.this);
+            }
         }
     }
 
@@ -326,5 +355,6 @@ public class GPSLocationFragment extends Fragment implements
         ft.commit();
         apiClient.stopAutoManage(getActivity());
         apiClient.disconnect();
+        mapa.clear();
     }
 }
