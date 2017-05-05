@@ -116,20 +116,22 @@ public class GPSLocationFragment extends Fragment implements
         return view;
     }
 
-    private boolean isLocationServiceEnabled(){
+    private boolean isLocationServiceEnabled() {
         Context context = getActivity().getApplicationContext();
         LocationManager locationManager = null;
-        boolean gps_enabled= false,network_enabled = false;
+        boolean gps_enabled = false, network_enabled = false;
 
-        if(locationManager ==null)
+        if (locationManager == null)
             locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        try{
+        try {
             gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        }catch(Exception ex){}
+        } catch (Exception ex) {
+        }
 
-        try{
+        try {
             network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        }catch(Exception ex){}
+        } catch (Exception ex) {
+        }
 
         return gps_enabled || network_enabled;
 
@@ -174,8 +176,7 @@ public class GPSLocationFragment extends Fragment implements
                     }
                 }
             });
-        }
-        else{
+        } else {
             showToast(getActivity().getApplicationContext(), "El GPS está deshabilitado.");
         }
     }
@@ -302,6 +303,11 @@ public class GPSLocationFragment extends Fragment implements
 
         mapa = map;
         mapa.getUiSettings().setZoomControlsEnabled(true);
+        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (isLocationServiceEnabled())
+                map.getUiSettings().setMyLocationButtonEnabled(true);
+        }
+        mapa.setMyLocationEnabled(true);
         drawBuildingsMarkers();
 
     }
