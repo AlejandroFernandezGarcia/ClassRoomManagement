@@ -303,11 +303,14 @@ public class GPSLocationFragment extends Fragment implements
 
         mapa = map;
         mapa.getUiSettings().setZoomControlsEnabled(true);
-        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            if (isLocationServiceEnabled())
-                map.getUiSettings().setMyLocationButtonEnabled(true);
+
+        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
         }
         mapa.setMyLocationEnabled(true);
+        if (isLocationServiceEnabled())
+            map.getUiSettings().setMyLocationButtonEnabled(true);
+
         drawBuildingsMarkers();
 
     }
@@ -363,4 +366,6 @@ public class GPSLocationFragment extends Fragment implements
         apiClient.disconnect();
         mapa.clear();
     }
+
+
 }
