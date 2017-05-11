@@ -15,14 +15,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.util.DebugUtils;
 import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -355,16 +353,18 @@ public class GPSLocationFragment extends Fragment implements
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         FragmentManager fm = getActivity().getSupportFragmentManager();
 
         Fragment fragment = mapFragment;
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.remove(fragment);
-        ft.commit();
+        if (fragment.isResumed()) {
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.remove(fragment);
+            ft.commit();
+        }
         apiClient.stopAutoManage(getActivity());
         apiClient.disconnect();
         mapa.clear();
+        super.onDestroyView();
     }
 
 

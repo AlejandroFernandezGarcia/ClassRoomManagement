@@ -46,5 +46,6 @@
     <string name="menu_exit">Exit</string>
     <string name="lateral_menu_header">Lateral menu header</string>
     <string name="update_confirmation">Your profile has been updated correctly.</string>
+    <string name="email_text">Email</string>
 
 </resources>

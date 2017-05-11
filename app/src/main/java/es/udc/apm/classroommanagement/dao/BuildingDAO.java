@@ -24,8 +24,8 @@ public class BuildingDAO {
             this.connection.executeQuery(query);
             while (connection.getResult().next()) {
                 short id = connection.getResult().getShort("BUILD_ID");
-                double latitude= connection.getResult().getShort("BUILD_LATITUDE");
-                double longitude= connection.getResult().getShort("BUILD_LONGITUDE");
+                double latitude = connection.getResult().getDouble("BUILD_LATITUDE");
+                double longitude = connection.getResult().getDouble("BUILD_LONGITUDE");
                 String address= connection.getResult().getString("BUILD_ADDRES");
                 String name = connection.getResult().getString("BUILD_NAME");
                 int zipcode = connection.getResult().getInt("BUILD_ZIPCODE");

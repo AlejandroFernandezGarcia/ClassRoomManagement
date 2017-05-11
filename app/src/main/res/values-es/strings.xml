@@ -46,5 +46,6 @@
     <string name="menu_exit">Salir</string>
     <string name="lateral_menu_header">Cabecera menú lateral</string>
     <string name="update_confirmation">Su perfil se ha actualizado correctamente.</string>
+    <string name="email_text">Correo electrónico</string>
 
 </resources>

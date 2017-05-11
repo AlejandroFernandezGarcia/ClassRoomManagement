@@ -44,9 +44,7 @@ public class Building {
             return false;
         if (getAddress() != null ? !getAddress().equals(that.getAddress()) : that.getAddress() != null)
             return false;
-        if (getRegion() != null ? !getRegion().equals(that.getRegion()) : that.getRegion() != null)
-            return false;
-        return getCountry() != null ? getCountry().equals(that.getCountry()) : that.getCountry() == null;
+        return getRegion() != null ? getRegion().equals(that.getRegion()) : that.getRegion() == null && (getCountry() != null ? getCountry().equals(that.getCountry()) : that.getCountry() == null);
 
     }
 

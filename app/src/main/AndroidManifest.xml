@@ -14,6 +14,10 @@
     <!-- Permisos para acceso al GPS para versiones de Android inferiores a la 6.0 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -28,16 +32,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDYOhnpxl_SU_hvS6F_2g10FEMyWLeeXk8" />
 
-        <uses-feature
-            android:glEsVersion="0x00020000"
-            android:required="true" />
-
         <activity android:name=".MainActivity"
-            android:screenOrientation="portrait"
-            android:configChanges="orientation">
+            android:configChanges="keyboard|orientation|locale|fontScale|screenLayout|screenSize|uiMode|navigation|touchscreen|keyboardHidden|layoutDirection|smallestScreenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
