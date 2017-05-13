@@ -33,4 +33,7 @@ public class Utils {
         Log.e(obj.getClass().toString(),e.getMessage());
     }
 
+    public static void logError(Object obj,String message){
+        Log.e(obj.getClass().getSimpleName(),message);
+    }
 }
