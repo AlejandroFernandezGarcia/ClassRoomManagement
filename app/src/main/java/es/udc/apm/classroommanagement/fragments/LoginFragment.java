@@ -1,7 +1,6 @@
 package es.udc.apm.classroommanagement.fragments;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -39,16 +38,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
 
     private GoogleApiClient mGoogleApiClient;
     private ProgressDialog mProgressDialog;
-    private SignInButton btnSignIn;
-    private UserService userService;
+    private static UserService userService;
 
     public LoginFragment() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -58,6 +51,18 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
 
         userService = new UserService();
 
+        SignInButton btnSignIn = (SignInButton) view.findViewById(R.id.btn_sign_in);
+        // Customizing G+ button
+
+        btnSignIn.setSize(SignInButton.SIZE_STANDARD);
+        btnSignIn.setOnClickListener(this); // listener for sign in button
+
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -66,33 +71,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                 .enableAutoManage(getActivity(), this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-
-        btnSignIn = (SignInButton) view.findViewById(R.id.btn_sign_in);
-        // Customizing G+ button
-        //btnSignIn.setSize(SignInButton.SIZE_STANDARD);
-        //btnSignIn.setScopes(gso.getScopeArray());
-
-        btnSignIn.setSize(SignInButton.SIZE_STANDARD);// listener for sign in button
-        btnSignIn.setOnClickListener(this);
-
-        return view;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-//        mListener = null;
     }
 
     @Override
@@ -138,38 +116,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         }
     }
 
-
-    /* @Override
-     public void onStart() {
-         super.onStart();
-
-         if (!isOnline(getApplicationContext())) {
-             showToast(getApplicationContext(), getString(R.string.no_internet));
-         } else {
-
-             OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-             if (opr.isDone()) {
-                 // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
-                 // and the GoogleSignInResult will be available instantly.
-                 Log.d(TAG, "Got cached sign-in");
-                 GoogleSignInResult result = opr.get();
-                 handleSignInResult(result);
-             } else {
-                 // If the user has not previously signed in on this device or the sign-in has expired,
-                 // this asynchronous branch will attempt to sign in the user silently.  Cross-device
-                 // single sign-on will occur in this branch.
-                 showProgressDialog();
-                 opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-                     @Override
-                     public void onResult(GoogleSignInResult googleSignInResult) {
-                         hideProgressDialog();
-                         handleSignInResult(googleSignInResult);
-                     }
-                 });
-             }
-         }
-     }
- */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
@@ -204,7 +150,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         //region Store in session variables and set name to lateral menu
         TextView txtView = (TextView) getActivity().findViewById(R.id.user_name);
         txtView.setText(name);
-        ((MainActivity) getActivity()).setUserName(name.length() != 0 ? name : getString(R.string.user_without_name));
+        ((MainActivity) getActivity()).setUserName((name != null ? name.length() : 0) != 0 ? name : getString(R.string.user_without_name));
         ((MainActivity) getActivity()).setGoogleId(googleID);
 
         //endregion
@@ -214,11 +160,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         try {
             if (userService != null) {
                 user = userService.getUser(googleID);
-                if(user != null){
+                if (user != null) {
                     name = user.getName();
                     surname = user.getLastName();
                     email = user.getMail();
-                    googleID=user.getGoogleId();
+                    googleID = user.getGoogleId();
                 }
             } else {
                 throw new Exception("Error servicio usuario");
@@ -235,12 +181,15 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         bundle.putString(USER_NAME, name);
         bundle.putString(USER_SURNAME, surname);
         Fragment fragment = null;
+        String title = getString(R.string.app_name);
 
         if (user != null && user.getGoogleId() != null) {
             logInfo(this, "User registered");
+            title = getString(R.string.menu_gps_location);
             fragment = new GPSLocationFragment();
         } else {
             logInfo(this, "User not registered, creating db row");
+            title = getString(R.string.menu_user_registration);
             fragment = new RegisterFragment();
             fragment.setArguments(bundle);
         }
@@ -253,10 +202,24 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_frame, fragment)
                 .commit();
+
+        getActivity().setTitle(title);
     }
 
     private void loginFail() {
         logInfo(this, "Login incorrecto");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mGoogleApiClient.disconnect();
     }
 }
 

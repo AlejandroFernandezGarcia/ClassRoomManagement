@@ -1,5 +1,7 @@
 package es.udc.apm.classroommanagement.dao;
 
+import android.os.AsyncTask;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -17,12 +19,14 @@ public class ConnectionManager {
     private static final String USER_NAME = "crm";
     private static final String PASSWORD = "Apm+2016";
     private static final String DRIVER = "com.mysql.jdbc.Driver";
-    private Connection connection = null;
+    private static Connection connection = null;
     private Statement statement = null;
     private ResultSet result = null;
 
-    public ConnectionManager() throws SQLException {
-        this.connect();
+    public ConnectionManager() {
+        if (connection == null) {
+            this.connect();
+        }
     }
 
     public Connection getConnection() {
@@ -30,7 +34,7 @@ public class ConnectionManager {
     }
 
     public void setConnection(Connection connection) {
-        this.connection = connection;
+        connection = connection;
     }
 
     public Statement getStatement() {
@@ -49,17 +53,13 @@ public class ConnectionManager {
         this.result = result;
     }
 
-    private void connect() throws SQLException {
-        try {
-            Class.forName(DRIVER);
-            this.connection = DriverManager.getConnection(URL + DB_NAME, USER_NAME, PASSWORD);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Error " + e.getMessage());
-        }
+    private void connect() {
+        ConnectionTask connectionTask = new ConnectionTask();
+        connectionTask.execute();
     }
 
     public void closeConnection() throws SQLException {
-        this.connection.close();
+        connection.close();
     }
 
     //Methods to ineract with database
@@ -82,5 +82,19 @@ public class ConnectionManager {
     public int insert(String insert) throws SQLException {
         this.statement = connection.createStatement();
         return statement.executeUpdate(insert);
+    }
+
+    private class ConnectionTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                Class.forName(DRIVER);
+                connection = DriverManager.getConnection(URL + DB_NAME, USER_NAME, PASSWORD);
+            } catch (ClassNotFoundException | SQLException e) {
+                System.out.println("Error " + e.getMessage());
+            }
+            return null;
+        }
     }
 }

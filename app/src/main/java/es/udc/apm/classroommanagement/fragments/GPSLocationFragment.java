@@ -10,13 +10,13 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
-import android.view.InflateException;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +55,7 @@ import static es.udc.apm.classroommanagement.utils.Utils.showToast;
 public class GPSLocationFragment extends Fragment implements
         GoogleApiClient.OnConnectionFailedListener,
         GoogleApiClient.ConnectionCallbacks,
-        LocationListener, OnMapReadyCallback {
+        LocationListener, OnMapReadyCallback, SwipeRefreshLayout.OnRefreshListener {
 
     private static final int PETICION_PERMISO_LOCALIZACION = 101;
     private static final int PETICION_CONFIG_UBICACION = 201;
@@ -66,8 +66,10 @@ public class GPSLocationFragment extends Fragment implements
     private GoogleMap mapa;
     private Marker personMarker;
     private SupportMapFragment mapFragment;
-    private BuildingService buildingService;
+    private static BuildingService buildingService;
     private View view = null;
+
+    private SwipeRefreshLayout swipeLayout;
 
     public GPSLocationFragment() {
         // Required empty public constructor
@@ -93,25 +95,38 @@ public class GPSLocationFragment extends Fragment implements
             if (parent != null)
                 parent.removeView(view);
         }
-        try {
-            view = inflater.inflate(R.layout.fragment_gps_location, container, false);
-            apiClient = new GoogleApiClient.Builder(getActivity())
-                    .enableAutoManage(getActivity(), this)
-                    .addConnectionCallbacks(this)
-                    .addApi(LocationServices.API)
-                    .build();
 
-            enableLocationUpdates();
+        view = inflater.inflate(R.layout.fragment_gps_location, container, false);
 
-            mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-
-            mapFragment.getMapAsync(this);
-
-        } catch (InflateException e) {
-            Log.e("", e.getMessage());
-        }
+        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefreshGPS);
+        swipeLayout.setOnRefreshListener(this);
+        swipeLayout.setEnabled(true);
+        swipeLayout.setRefreshing(true);
 
         return view;
+    }
+
+    @Override
+    public void onRefresh() {
+        swipeLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        apiClient = new GoogleApiClient.Builder(getActivity())
+                .enableAutoManage(getActivity(), this)
+                .addConnectionCallbacks(this)
+                .addApi(LocationServices.API)
+                .build();
+
+        enableLocationUpdates();
+
+        mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+
+        mapFragment.getMapAsync(this);
+        swipeLayout.setEnabled(false);
+        swipeLayout.setRefreshing(false);
     }
 
     private boolean isLocationServiceEnabled() {
@@ -119,8 +134,7 @@ public class GPSLocationFragment extends Fragment implements
         LocationManager locationManager = null;
         boolean gps_enabled = false, network_enabled = false;
 
-        if (locationManager == null)
-            locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         try {
             gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         } catch (Exception ex) {
@@ -153,7 +167,7 @@ public class GPSLocationFragment extends Fragment implements
 
             result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
                 @Override
-                public void onResult(LocationSettingsResult locationSettingsResult) {
+                public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
                     final Status status = locationSettingsResult.getStatus();
                     switch (status.getStatusCode()) {
                         case LocationSettingsStatusCodes.SUCCESS:
@@ -233,7 +247,14 @@ public class GPSLocationFragment extends Fragment implements
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult result) {
+    public void onStop() {
+        super.onStop();
+        disableLocationUpdates();
+        apiClient.disconnect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult result) {
         //Se ha producido un error que no se puede resolver automáticamente
         //y la conexión con los Google Play Services no se ha establecido.
 
@@ -249,7 +270,7 @@ public class GPSLocationFragment extends Fragment implements
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PETICION_PERMISO_LOCALIZACION) {
             if (grantResults.length == 1
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -342,6 +363,7 @@ public class GPSLocationFragment extends Fragment implements
             showToast(getActivity().getApplicationContext(), getString(R.string.connection_error));
         }
 
+        assert buildings != null;
         for (Building building : buildings) {
             LatLng latLng = new LatLng(building.getLatitude(), building.getLongitude());
             mapa.addMarker(new MarkerOptions()

@@ -15,22 +15,17 @@ public class RoleService extends AsyncTask<Void, Void, List<Role>> {
 
     //Constants
     private static final String TAG = RoleService.class.getSimpleName();
-    private RoleDAO roleDAO;
+    private static final RoleDAO roleDAO = new RoleDAO();
 
     public RoleService() {
-        roleDAO = new RoleDAO();
     }
 
     @Override
     protected List<Role> doInBackground(Void... params) {
-        if (this.roleDAO == null) {
-            this.roleDAO = new RoleDAO();
-        }
-        List<Role> roles = getAllRoles();
-        return roles;
+        return getAllRoles();
     }
 
-    public List<Role> getAllRoles() {
+    private List<Role> getAllRoles() {
         return roleDAO.getAllRoles();
     }
 }
