@@ -8,10 +8,10 @@ import static es.udc.apm.classroommanagement.utils.Utils.logError;
  * Created by Alejandro on 13/05/2017.
  */
 
-public class SampleUtils
+public class VuforiaUtils
 {
 
-    private static final String LOGTAG = "SampleUtils";
+    private static final String LOGTAG = "VuforiaUtils";
 
 
     static int initShader(int shaderType, String source)

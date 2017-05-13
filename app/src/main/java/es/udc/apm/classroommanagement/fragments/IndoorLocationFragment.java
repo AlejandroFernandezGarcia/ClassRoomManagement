@@ -31,31 +31,32 @@ import java.util.Vector;
 
 import es.udc.apm.classroommanagement.MainActivity;
 import es.udc.apm.classroommanagement.R;
+import es.udc.apm.classroommanagement.utils.vuforia.ApplicationSession;
 import es.udc.apm.classroommanagement.utils.vuforia.ImageTargetRenderer;
 import es.udc.apm.classroommanagement.utils.vuforia.LoadingDialogHandler;
-import es.udc.apm.classroommanagement.utils.vuforia.SampleApplicationControl;
-import es.udc.apm.classroommanagement.utils.vuforia.SampleApplicationException;
-import es.udc.apm.classroommanagement.utils.vuforia.SampleApplicationGLView;
-import es.udc.apm.classroommanagement.utils.vuforia.SampleApplicationSession;
+import es.udc.apm.classroommanagement.utils.vuforia.ApplicationControl;
+import es.udc.apm.classroommanagement.utils.vuforia.ApplicationException;
+import es.udc.apm.classroommanagement.utils.vuforia.ApplicationGLView;
 import es.udc.apm.classroommanagement.utils.vuforia.Texture;
 
 import static es.udc.apm.classroommanagement.utils.Utils.logError;
 import static es.udc.apm.classroommanagement.utils.Utils.logInfo;
 
-public class IndoorLocationFragment extends Fragment implements SampleApplicationControl{
+public class IndoorLocationFragment extends Fragment implements ApplicationControl {
 
     ///region Var
 
-    SampleApplicationSession vuforiaAppSession;
+    ApplicationSession vuforiaAppSession;
 
     private DataSet mCurrentDataset;
     private int mCurrentDatasetSelectionIndex = 0;
     private int mStartDatasetsIndex = 0;
     private int mDatasetsNumber = 0;
+    private boolean mContAutofocus = false;
     private ArrayList<String> mDatasetStrings = new ArrayList<String>();
 
     // Our OpenGL view:
-    private SampleApplicationGLView mGlView;
+    private ApplicationGLView mGlView;
 
     // Our renderer:
     private ImageTargetRenderer mRenderer;
@@ -65,7 +66,6 @@ public class IndoorLocationFragment extends Fragment implements SampleApplicatio
 
     private boolean mSwitchDatasetAsap = false;
     private boolean mFlash = false;
-    private boolean mContAutofocus = false;
     private boolean mExtendedTracking = false;
 
     private View mFlashOptionView;
@@ -90,11 +90,10 @@ public class IndoorLocationFragment extends Fragment implements SampleApplicatio
         super.onCreate(savedInstanceState);
         ((MainActivity)getActivity()).showLateralMenu(true);
 
-        vuforiaAppSession = new SampleApplicationSession(this);
+        vuforiaAppSession = new ApplicationSession(this);
 
         startLoadingAnimation();
-        mDatasetStrings.add("StonesAndChips.xml");
-        mDatasetStrings.add("Tarmac.xml");
+        mDatasetStrings.add("ApmMarks.xml");
 
         vuforiaAppSession
                 .initAR(getActivity(), ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -185,7 +184,7 @@ public class IndoorLocationFragment extends Fragment implements SampleApplicatio
         try
         {
             vuforiaAppSession.resumeAR();
-        } catch (SampleApplicationException e)
+        } catch (ApplicationException e)
         {
              logError(this, e);
         }
@@ -238,7 +237,7 @@ public class IndoorLocationFragment extends Fragment implements SampleApplicatio
         try
         {
             vuforiaAppSession.pauseAR();
-        } catch (SampleApplicationException e)
+        } catch (ApplicationException e)
         {
             logError(this, e.getString());
         }
@@ -254,7 +253,7 @@ public class IndoorLocationFragment extends Fragment implements SampleApplicatio
         try
         {
             vuforiaAppSession.stopAR();
-        } catch (SampleApplicationException e)
+        } catch (ApplicationException e)
         {
             logError(this, e);
         }
@@ -275,7 +274,7 @@ public class IndoorLocationFragment extends Fragment implements SampleApplicatio
         int stencilSize = 0;
         boolean translucent = Vuforia.requiresAlpha();
 
-        mGlView = new SampleApplicationGLView(this.getActivity());
+        mGlView = new ApplicationGLView(this.getActivity());
         mGlView.init(translucent, depthSize, stencilSize);
 
         mRenderer = new ImageTargetRenderer(this, vuforiaAppSession);
@@ -381,7 +380,7 @@ public class IndoorLocationFragment extends Fragment implements SampleApplicatio
 
 
     @Override
-    public void onInitARDone(SampleApplicationException exception)
+    public void onInitARDone(ApplicationException exception)
     {
 
         if (exception == null)
@@ -406,7 +405,7 @@ public class IndoorLocationFragment extends Fragment implements SampleApplicatio
             try
             {
                 vuforiaAppSession.startAR(CameraDevice.CAMERA_DIRECTION.CAMERA_DIRECTION_DEFAULT);
-            } catch (SampleApplicationException e)
+            } catch (ApplicationException e)
             {
                 logError(this,e);
             }
@@ -418,7 +417,7 @@ public class IndoorLocationFragment extends Fragment implements SampleApplicatio
                 mContAutofocus = true;
             else
                 logInfo(this, "Unable to enable continuous autofocus");
-
+            //TODO Desactivas aqui?
 //            mSampleAppMenu = new SampleAppMenu(this, this, "Image Targets",
 //                    mGlView, mUILayout, null);
 //            setSampleAppMenuSettings();

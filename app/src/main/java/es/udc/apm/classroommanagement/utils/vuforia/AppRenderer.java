@@ -32,10 +32,10 @@ import static es.udc.apm.classroommanagement.utils.Utils.logError;
  * Created by Alejandro on 13/05/2017.
  */
 
-public class SampleAppRenderer {
+public class AppRenderer {
     private RenderingPrimitives mRenderingPrimitives = null;
 
-    private SampleAppRendererControl mRenderingInterface = null;
+    private AppRendererControl mRenderingInterface = null;
     private Activity mActivity = null;
 
     private Renderer mRenderer = null;
@@ -59,8 +59,8 @@ public class SampleAppRenderer {
     // Stores orientation
     private boolean mIsPortrait = false;
 
-    public SampleAppRenderer(SampleAppRendererControl renderingInterface, Activity activity, int deviceMode,
-                             boolean stereo, float nearPlane, float farPlane) {
+    public AppRenderer(AppRendererControl renderingInterface, Activity activity, int deviceMode,
+                       boolean stereo, float nearPlane, float farPlane) {
         mActivity = activity;
 
         mRenderingInterface = renderingInterface;
@@ -98,7 +98,7 @@ public class SampleAppRenderer {
     }
 
     void initRendering() {
-        vbShaderProgramID = SampleUtils.createProgramFromShaderSrc(VideoBackgroundShader.VB_VERTEX_SHADER,
+        vbShaderProgramID = VuforiaUtils.createProgramFromShaderSrc(VideoBackgroundShader.VB_VERTEX_SHADER,
                 VideoBackgroundShader.VB_FRAGMENT_SHADER);
 
         // Rendering configuration for video background
@@ -185,7 +185,7 @@ public class SampleAppRenderer {
 
             currentView = viewID;
 
-            // Call renderFrame from the app renderer class which implements SampleAppRendererControl
+            // Call renderFrame from the app renderer class which implements AppRendererControl
             // This will be called for MONO, LEFT and RIGHT views, POSTPROCESS will not render the
             // frame
             if (currentView != VIEW.VIEW_POSTPROCESS)
@@ -252,7 +252,7 @@ public class SampleAppRenderer {
         GLES20.glDisableVertexAttribArray(vbVertexHandle);
         GLES20.glDisableVertexAttribArray(vbTexCoordHandle);
 
-        SampleUtils.checkGLError("Rendering of the video background failed");
+        VuforiaUtils.checkGLError("Rendering of the video background failed");
     }
 
 

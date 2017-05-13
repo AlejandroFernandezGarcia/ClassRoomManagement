@@ -14,7 +14,7 @@ import java.nio.ByteOrder;
  * Created by Alejandro on 13/05/2017.
  */
 
-public class SampleApplication3DModel extends MeshObject{
+public class Application3DModel extends MeshObject{
 
     private ByteBuffer verts;
     private ByteBuffer textCoords;

@@ -3,7 +3,6 @@ package es.udc.apm.classroommanagement.utils.vuforia;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
-import android.util.Log;
 
 import com.vuforia.Device;
 import com.vuforia.Matrix44F;
@@ -19,9 +18,13 @@ import java.util.Vector;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import es.udc.apm.classroommanagement.MainActivity;
 import es.udc.apm.classroommanagement.fragments.IndoorLocationFragment;
 
+import static es.udc.apm.classroommanagement.utils.Constants.ROOM_1;
+import static es.udc.apm.classroommanagement.utils.Constants.ROOM_2;
+import static es.udc.apm.classroommanagement.utils.Constants.ROOM_3;
+import static es.udc.apm.classroommanagement.utils.Constants.ROOM_4;
+import static es.udc.apm.classroommanagement.utils.Constants.ROOM_5;
 import static es.udc.apm.classroommanagement.utils.Utils.logError;
 import static es.udc.apm.classroommanagement.utils.Utils.logInfo;
 
@@ -29,11 +32,10 @@ import static es.udc.apm.classroommanagement.utils.Utils.logInfo;
  * Created by Alejandro on 13/05/2017.
  */
 
-public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRendererControl
-{
-    private SampleApplicationSession vuforiaAppSession;
+public class ImageTargetRenderer implements GLSurfaceView.Renderer, AppRendererControl {
+    private ApplicationSession vuforiaAppSession;
     private IndoorLocationFragment mActivity;
-    private SampleAppRenderer mSampleAppRenderer;
+    private AppRenderer mAppRenderer;
 
     private Vector<Texture> mTextures;
 
@@ -46,7 +48,7 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
     private Teapot mTeapot;
 
     private float kBuildingScale = 0.012f;
-    private SampleApplication3DModel mBuildingsModel;
+    private Application3DModel mBuildingsModel;
 
     private boolean mIsActive = false;
     private boolean mModelIsLoaded = false;
@@ -54,48 +56,44 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
     private static final float OBJECT_SCALE_FLOAT = 0.003f;
 
 
-    public ImageTargetRenderer(IndoorLocationFragment activity, SampleApplicationSession session)
-    {
+    public ImageTargetRenderer(IndoorLocationFragment activity, ApplicationSession session) {
         mActivity = activity;
         vuforiaAppSession = session;
-        // SampleAppRenderer used to encapsulate the use of RenderingPrimitives setting
+        // AppRenderer used to encapsulate the use of RenderingPrimitives setting
         // the device mode AR/VR and stereo mode
-        mSampleAppRenderer = new SampleAppRenderer(this, mActivity.getActivity(), Device.MODE.MODE_AR, false, 0.01f , 5f);
+        mAppRenderer = new AppRenderer(this, mActivity.getActivity(), Device.MODE.MODE_AR, false, 0.01f, 5f);
     }
 
 
     // Called to draw the current frame.
     @Override
-    public void onDrawFrame(GL10 gl)
-    {
+    public void onDrawFrame(GL10 gl) {
         if (!mIsActive)
             return;
 
-        // Call our function to render content from SampleAppRenderer class
-        mSampleAppRenderer.render();
+        // Call our function to render content from AppRenderer class
+        mAppRenderer.render();
     }
 
 
-    public void setActive(boolean active)
-    {
+    public void setActive(boolean active) {
         mIsActive = active;
 
-        if(mIsActive)
-            mSampleAppRenderer.configureVideoBackground();
+        if (mIsActive)
+            mAppRenderer.configureVideoBackground();
     }
 
 
     // Called when the surface is created or recreated.
     @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config)
-    {
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         logInfo(this, "GLRenderer.onSurfaceCreated");
 
         // Call Vuforia function to (re)initialize rendering after first use
         // or after OpenGL ES context was lost (e.g. after onPause/onResume):
         vuforiaAppSession.onSurfaceCreated();
 
-        mSampleAppRenderer.onSurfaceCreated();
+        mAppRenderer.onSurfaceCreated();
     }
 
 
@@ -108,20 +106,18 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
         vuforiaAppSession.onSurfaceChanged(width, height);
 
         // RenderingPrimitives to be updated when some rendering change is done
-        mSampleAppRenderer.onConfigurationChanged(mIsActive);
+        mAppRenderer.onConfigurationChanged(mIsActive);
 
         initRendering();
     }
 
 
     // Function for initializing the renderer.
-    private void initRendering()
-    {
+    private void initRendering() {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, Vuforia.requiresAlpha() ? 0.0f
                 : 1.0f);
 
-        for (Texture t : mTextures)
-        {
+        for (Texture t : mTextures) {
             GLES20.glGenTextures(1, t.mTextureID, 0);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, t.mTextureID[0]);
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
@@ -133,7 +129,7 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
                     GLES20.GL_UNSIGNED_BYTE, t.mData);
         }
 
-        shaderProgramID = SampleUtils.createProgramFromShaderSrc(
+        shaderProgramID = VuforiaUtils.createProgramFromShaderSrc(
                 CubeShaders.CUBE_MESH_VERTEX_SHADER,
                 CubeShaders.CUBE_MESH_FRAGMENT_SHADER);
 
@@ -146,11 +142,11 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
         texSampler2DHandle = GLES20.glGetUniformLocation(shaderProgramID,
                 "texSampler2D");
 
-        if(!mModelIsLoaded) {
+        if (!mModelIsLoaded) {
             mTeapot = new Teapot();
 
             try {
-                mBuildingsModel = new SampleApplication3DModel();
+                mBuildingsModel = new Application3DModel();
                 mBuildingsModel.loadModel(mActivity.getResources().getAssets(),
                         "ImageTargets/Buildings.txt");
                 mModelIsLoaded = true;
@@ -165,18 +161,16 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
 
     }
 
-    public void updateConfiguration()
-    {
-        mSampleAppRenderer.onConfigurationChanged(mIsActive);
+    public void updateConfiguration() {
+        mAppRenderer.onConfigurationChanged(mIsActive);
     }
 
     // The render function called from SampleAppRendering by using RenderingPrimitives views.
-    // The state is owned by SampleAppRenderer which is controlling it's lifecycle.
+    // The state is owned by AppRenderer which is controlling it's lifecycle.
     // State should not be cached outside this method.
-    public void renderFrame(State state, float[] projectionMatrix)
-    {
+    public void renderFrame(State state, float[] projectionMatrix) {
         // Renders video background replacing Renderer.DrawVideoBackground()
-        mSampleAppRenderer.renderVideoBackground();
+        mAppRenderer.renderVideoBackground();
 
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 
@@ -193,11 +187,25 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
             Matrix44F modelViewMatrix_Vuforia = Tool
                     .convertPose2GLMatrix(result.getPose());
             float[] modelViewMatrix = modelViewMatrix_Vuforia.getData();
-
-            int textureIndex = trackable.getName().equalsIgnoreCase("stones") ? 0
-                    : 1;
-            textureIndex = trackable.getName().equalsIgnoreCase("tarmac") ? 2
-                    : textureIndex;
+            //TODO Aqui el trackable.getNAme devuelve el nombre de la imagen escaneada
+            switch (trackable.getName()) {
+                case ROOM_1:
+                    logInfo(this,"Scanned ROOM_1");
+                    break;
+                case ROOM_2:
+                    logInfo(this,"Scanned ROOM_2");
+                    break;
+                case ROOM_3:
+                    logInfo(this,"Scanned ROOM_3");
+                    break;
+                case ROOM_4:
+                    logInfo(this,"Scanned ROOM_4");
+                    break;
+                case ROOM_5:
+                    logInfo(this,"Scanned ROOM_5");
+                    break;
+            }
+            int textureIndex = 1;
 
             // deal with the modelview and projection matrices
             float[] modelViewProjection = new float[16];
@@ -263,10 +271,10 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
                 GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0,
                         mBuildingsModel.getNumObjectVertex());
 
-                SampleUtils.checkGLError("Renderer DrawBuildings");
+                VuforiaUtils.checkGLError("Renderer DrawBuildings");
             }
 
-            SampleUtils.checkGLError("Render Frame");
+            VuforiaUtils.checkGLError("Render Frame");
 
         }
 
@@ -274,15 +282,13 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, SampleAppRen
 
     }
 
-    private void printUserData(Trackable trackable)
-    {
+    private void printUserData(Trackable trackable) {
         String userData = (String) trackable.getUserData();
         logInfo(this, "UserData:Retreived User Data	\"" + userData + "\"");
     }
 
 
-    public void setTextures(Vector<Texture> textures)
-    {
+    public void setTextures(Vector<Texture> textures) {
         mTextures = textures;
 
     }

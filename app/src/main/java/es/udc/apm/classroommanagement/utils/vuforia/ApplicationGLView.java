@@ -9,8 +9,6 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 
-import javax.microedition.khronos.egl.EGL10;
-
 import static es.udc.apm.classroommanagement.utils.Utils.logError;
 import static es.udc.apm.classroommanagement.utils.Utils.logInfo;
 
@@ -18,13 +16,10 @@ import static es.udc.apm.classroommanagement.utils.Utils.logInfo;
  * Created by Alejandro on 13/05/2017.
  */
 
-public class SampleApplicationGLView extends GLSurfaceView
+public class ApplicationGLView extends GLSurfaceView
 {
-    private static final String LOGTAG = "Vuforia_SampleGLView";
-
-
     // Constructor.
-    public SampleApplicationGLView(Context context)
+    public ApplicationGLView(Context context)
     {
         super(context);
     }
@@ -103,7 +98,7 @@ public class SampleApplicationGLView extends GLSurfaceView
         int error;
         while ((error = egl.eglGetError()) != EGL10.EGL_SUCCESS)
         {
-            logError(SampleApplicationGLView.class, String.format("%s: EGL error: 0x%x", prompt, error));
+            logError(ApplicationGLView.class, String.format("%s: EGL error: 0x%x", prompt, error));
         }
     }
 
