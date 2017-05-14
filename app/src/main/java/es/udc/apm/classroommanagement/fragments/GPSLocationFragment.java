@@ -20,6 +20,7 @@ import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -48,6 +49,7 @@ import es.udc.apm.classroommanagement.MainActivity;
 import es.udc.apm.classroommanagement.R;
 import es.udc.apm.classroommanagement.model.Building;
 import es.udc.apm.classroommanagement.services.BuildingService;
+import es.udc.apm.classroommanagement.utils.PopupAdapter;
 
 import static es.udc.apm.classroommanagement.utils.Utils.logError;
 import static es.udc.apm.classroommanagement.utils.Utils.showToast;
@@ -55,7 +57,7 @@ import static es.udc.apm.classroommanagement.utils.Utils.showToast;
 public class GPSLocationFragment extends Fragment implements
         GoogleApiClient.OnConnectionFailedListener,
         GoogleApiClient.ConnectionCallbacks,
-        LocationListener, OnMapReadyCallback {
+        LocationListener, OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
     private static final int PETICION_PERMISO_LOCALIZACION = 101;
     private static final int PETICION_CONFIG_UBICACION = 201;
@@ -78,6 +80,8 @@ public class GPSLocationFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         ((MainActivity) getActivity()).showLateralMenu(true);
         buildingService = new BuildingService();
+
+
     }
 
     @Override
@@ -309,8 +313,11 @@ public class GPSLocationFragment extends Fragment implements
         if (isLocationServiceEnabled())
             map.getUiSettings().setMyLocationButtonEnabled(true);
 
-        drawBuildingsMarkers();
 
+
+        map.setInfoWindowAdapter(new PopupAdapter(LayoutInflater.from(getActivity().getApplicationContext()), getActivity().getApplicationContext()));
+        map.setOnInfoWindowClickListener(this);
+        drawBuildingsMarkers();
     }
 
     private void moveMap(Location pos) {
@@ -322,14 +329,16 @@ public class GPSLocationFragment extends Fragment implements
     private void movePersonMarker(Location pos) {
 
         LatLng latLng = new LatLng(pos.getLatitude(), pos.getLongitude());
+        if (isLocationServiceEnabled()) {
+            if (personMarker != null) {
+                personMarker.setPosition(latLng);
+            } else {
+                personMarker = mapa.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title("Usted está aquí")
+                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_person)));
 
-        if (personMarker != null) {
-            personMarker.setPosition(latLng);
-        } else {
-            personMarker = mapa.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .title("I am here")
-                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_person)));
+            }
         }
     }
 
@@ -343,12 +352,21 @@ public class GPSLocationFragment extends Fragment implements
         }
 
         for (Building building : buildings) {
-            LatLng latLng = new LatLng(building.getLatitude(), building.getLongitude());
-            mapa.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .title(building.getName())
-                    .snippet(building.getInfoString()));
+            addMarker(mapa, building.getLatitude(), building.getLongitude(), building.getName(), building.getInfoString());
+
         }
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Toast.makeText(getActivity().getApplicationContext(), marker.getTitle(), Toast.LENGTH_LONG).show();
+    }
+
+    private void addMarker(GoogleMap map, double lat, double lon,
+                           String title, String snippet) {
+        map.addMarker(new MarkerOptions().position(new LatLng(lat, lon))
+                .title(title)
+                .snippet(snippet));
     }
 
     @Override
