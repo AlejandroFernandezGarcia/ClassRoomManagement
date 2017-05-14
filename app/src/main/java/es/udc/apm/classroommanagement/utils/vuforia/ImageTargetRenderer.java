@@ -1,28 +1,17 @@
 package es.udc.apm.classroommanagement.utils.vuforia;
 
-import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
 import com.vuforia.Device;
 import com.vuforia.State;
 import com.vuforia.Trackable;
 import com.vuforia.TrackableResult;
-import com.vuforia.Vuforia;
-
-import java.io.IOException;
-import java.util.Vector;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import es.udc.apm.classroommanagement.fragments.IndoorLocationFragment;
 
-import static es.udc.apm.classroommanagement.utils.Constants.ROOM_1;
-import static es.udc.apm.classroommanagement.utils.Constants.ROOM_2;
-import static es.udc.apm.classroommanagement.utils.Constants.ROOM_3;
-import static es.udc.apm.classroommanagement.utils.Constants.ROOM_4;
-import static es.udc.apm.classroommanagement.utils.Constants.ROOM_5;
-import static es.udc.apm.classroommanagement.utils.Utils.logError;
 import static es.udc.apm.classroommanagement.utils.Utils.logInfo;
 
 /**
@@ -43,7 +32,6 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, AppRendererC
         mAppRenderer = new AppRenderer(this, mActivity.getActivity(), Device.MODE.MODE_AR, false, 0.01f, 5f);
     }
 
-
     // Called to draw the current frame.
     @Override
     public void onDrawFrame(GL10 gl) {
@@ -54,14 +42,12 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, AppRendererC
         mAppRenderer.render();
     }
 
-
     public void setActive(boolean active) {
         mIsActive = active;
 
         if (mIsActive)
             mAppRenderer.configureVideoBackground();
     }
-
 
     // Called when the surface is created or recreated.
     @Override
@@ -74,7 +60,6 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, AppRendererC
 
         mAppRenderer.onSurfaceCreated();
     }
-
 
     // Called when the surface changed size.
     @Override
@@ -89,7 +74,6 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, AppRendererC
 
         initRendering();
     }
-
 
     // Function for initializing the renderer.
     private void initRendering() {

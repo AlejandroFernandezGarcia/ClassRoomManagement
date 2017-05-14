@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Class Room Management</string>
-    <string name="action_settings">Ajustes</string>
 
     <!-- Toast text -->
     <string name="no_internet">No hay conexión a internet.</string>
@@ -10,23 +9,12 @@
     <string name="no_gps_permission">Se ha interrumpido la conexión con Google Play Services.</string>
 
     <!-- Button text -->
-    <string name="btn_gps_on">GPS Encendido</string>
-    <string name="btn_gps_off">GPS Apagado</string>
-    <string name="btn_location">Última posición</string>
     <string name="loading">Cargando</string>
 
     <!-- TextViews Text-->
-    <string name="longitude_label">Longitud</string>
-    <string name="latitude_label">Latitud</string>
 
     <!-- Database Text-->
-    <string name="welcome_message">
-        Click FETCH to fetch the contents of the database table TROLE.
-    </string>
-    <string name="fetch_text">Fetch</string>
-    <string name="clear_text">Limpiar</string>
     <string name="connection_error">Error de conexión.</string>
-    <string name="fetch_cancelled">Fetch cancelado.</string>
     <string name="name_text">Nombre</string>
     <string name="user_without_name">Usuario sin nombre</string>
     <string name="surname_text">Apellidos</string>

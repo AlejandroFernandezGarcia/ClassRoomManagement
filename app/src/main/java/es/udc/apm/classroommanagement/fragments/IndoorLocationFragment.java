@@ -4,15 +4,12 @@ import android.app.AlertDialog;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.content.DialogInterface;
 import android.view.ViewGroup.LayoutParams;
 
@@ -27,7 +24,6 @@ import com.vuforia.TrackerManager;
 import com.vuforia.Vuforia;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 import es.udc.apm.classroommanagement.MainActivity;
 import es.udc.apm.classroommanagement.R;
@@ -37,7 +33,6 @@ import es.udc.apm.classroommanagement.utils.vuforia.LoadingDialogHandler;
 import es.udc.apm.classroommanagement.utils.vuforia.ApplicationControl;
 import es.udc.apm.classroommanagement.utils.vuforia.ApplicationException;
 import es.udc.apm.classroommanagement.utils.vuforia.ApplicationGLView;
-import es.udc.apm.classroommanagement.utils.vuforia.Texture;
 
 import static es.udc.apm.classroommanagement.utils.Utils.logError;
 import static es.udc.apm.classroommanagement.utils.Utils.logInfo;
@@ -62,10 +57,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
     private ImageTargetRenderer mRenderer;
 
     private boolean mSwitchDatasetAsap = false;
-    private boolean mFlash = false;
     private boolean mExtendedTracking = false;
-
-    private View mFlashOptionView;
 
     private RelativeLayout mUILayout;
 
@@ -197,19 +189,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
             mGlView.onPause();
         }
 
-        // Turn off the flash
-        if (mFlashOptionView != null && mFlash)
-        {
-            // OnCheckedChangeListener is called upon changing the checked state
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-            {
-                ((Switch) mFlashOptionView).setChecked(false);
-            } else
-            {
-                ((CheckBox) mFlashOptionView).setChecked(false);
-            }
-        }
-
         try
         {
             vuforiaAppSession.pauseAR();
@@ -218,7 +197,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
             logError(this, e.getString());
         }
     }
-
 
     // The final call you receive before your activity is destroyed.
     @Override
@@ -237,7 +215,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
         System.gc();
     }
 
-
     // Initializes AR application components.
     private void initApplicationAR()
     {
@@ -252,7 +229,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
         mRenderer = new ImageTargetRenderer(this, vuforiaAppSession);
         mGlView.setRenderer(mRenderer);
     }
-
 
     private void startLoadingAnimation()
     {
@@ -275,7 +251,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
                 LayoutParams.MATCH_PARENT));
 
     }
-
 
     // Methods to load and destroy tracking data.
     @Override
@@ -315,10 +290,8 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
             logInfo(this, "UserData:Set the following user data "
                     + (String) trackable.getUserData());
         }
-
         return true;
     }
-
 
     @Override
     public boolean doUnloadTrackersData()
@@ -348,7 +321,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 
         return result;
     }
-
 
     @Override
     public void onInitARDone(ApplicationException exception)
@@ -398,7 +370,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
         }
     }
 
-
     // Shows initialization error messages as System dialogs
     public void showInitializationErrorMessage(String message)
     {
@@ -435,7 +406,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
         });
     }
 
-
     @Override
     public void onVuforiaUpdate(State state)
     {
@@ -456,7 +426,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
             doLoadTrackersData();
         }
     }
-
 
     @Override
     public boolean doInitTrackers()
@@ -480,7 +449,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
         return result;
     }
 
-
     @Override
     public boolean doStartTrackers()
     {
@@ -495,7 +463,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
         return result;
     }
 
-
     @Override
     public boolean doStopTrackers()
     {
@@ -509,7 +476,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 
         return result;
     }
-
 
     @Override
     public boolean doDeinitTrackers()
@@ -527,5 +493,4 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
     {
         return mExtendedTracking;
     }
-
 }
