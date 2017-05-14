@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Class Room Management</string>
-    <string name="action_settings">Ajustes</string>
 
     <!-- Toast text -->
     <string name="no_internet">No hay conexión a internet.</string>
@@ -10,23 +9,12 @@
     <string name="no_gps_permission">Se ha interrumpido la conexión con Google Play Services.</string>
 
     <!-- Button text -->
-    <string name="btn_gps_on">GPS Encendido</string>
-    <string name="btn_gps_off">GPS Apagado</string>
-    <string name="btn_location">Última posición</string>
     <string name="loading">Cargando</string>
 
     <!-- TextViews Text-->
-    <string name="longitude_label">Longitud</string>
-    <string name="latitude_label">Latitud</string>
 
     <!-- Database Text-->
-    <string name="welcome_message">
-        Click FETCH to fetch the contents of the database table TROLE.
-    </string>
-    <string name="fetch_text">Fetch</string>
-    <string name="clear_text">Limpiar</string>
     <string name="connection_error">Error de conexión.</string>
-    <string name="fetch_cancelled">Fetch cancelado.</string>
     <string name="name_text">Nombre</string>
     <string name="user_without_name">Usuario sin nombre</string>
     <string name="surname_text">Apellidos</string>
@@ -47,5 +35,21 @@
     <string name="lateral_menu_header">Cabecera menú lateral</string>
     <string name="update_confirmation">Su perfil se ha actualizado correctamente.</string>
     <string name="email_text">Correo electrónico</string>
+    <string name="open">Abrir</string>
+    <string name="close">Cerrar</string>
+    <string name="menu_user_registration">Registro</string>
+
+    <!--Vuforia -->
+    <string name="INIT_ERROR">Error</string>
+    <string name="INIT_ERROR_DEVICE_NOT_SUPPORTED">Failed to initialize Vuforia. This device is not supported.</string>
+    <string name="INIT_ERROR_NO_CAMERA_ACCESS">Failed to initialize Vuforia. Camera not accessible</string>
+    <string name="INIT_LICENSE_ERROR_MISSING_KEY">Vuforia App key is missing. Please get a valid key, by logging into your account at developer.vuforia.com and creating a new project.</string>
+    <string name="INIT_LICENSE_ERROR_INVALID_KEY">Invalid Key used. Please make sure you are using a valid Vuforia App Key.</string>
+    <string name="INIT_LICENSE_ERROR_NO_NETWORK_TRANSIENT">Unable to contact server. Please try again later.</string>
+    <string name="INIT_LICENSE_ERROR_NO_NETWORK_PERMANENT">No network available. Please make sure you are connected to the Internet.</string>
+    <string name="INIT_LICENSE_ERROR_CANCELED_KEY">This app license key has been canceled and may no longer be used. Please get a new license key.</string>
+    <string name="INIT_LICENSE_ERROR_PRODUCT_TYPE_MISMATCH">Vuforia App key is not valid for this product. Please get a valid key, by logging into your account at developer.vuforia.com and choosing the right product type during project creation.</string>
+    <string name="INIT_LICENSE_ERROR_UNKNOWN_ERROR">Failed to initialize Vuforia.</string>
+    <string name="button_OK">OK</string>
 
 </resources>

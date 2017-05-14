@@ -15,27 +15,21 @@ import es.udc.apm.classroommanagement.model.Building;
 public class BuildingService {
     //Constants
     private static final String TAG = BuildingService.class.getSimpleName();
-    private BuildingDAO buildingDAO;
+    private static final BuildingDAO buildingDAO = new BuildingDAO();
 
     public BuildingService() {
-        buildingDAO = new BuildingDAO();
     }
 
     public List<Building> getAllBuildings() throws ExecutionException, InterruptedException {
         GetBuildingsTask getBuildingsTask = new GetBuildingsTask();
-        List<Building> buildings = getBuildingsTask.execute().get();
-        return buildings;
+        return getBuildingsTask.execute().get();
     }
 
     private class GetBuildingsTask extends AsyncTask<Void, Void, List<Building>> {
 
         @Override
         protected List<Building> doInBackground(Void... params) {
-            if (buildingDAO == null) {
-                buildingDAO = new BuildingDAO();
-            }
-            List<Building> result = buildingDAO.getAllBuildings();
-            return result;
+            return buildingDAO.getAllBuildings();
         }
     }
 

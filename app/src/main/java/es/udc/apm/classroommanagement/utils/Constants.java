@@ -9,4 +9,10 @@ public class Constants {
     public final static String USER_MAIL = "es.udc.apm.classroommanagement.USER_MAIL";
     public final static String USER_NAME = "es.udc.apm.classroommanagement.USER_NAME";
     public final static String USER_SURNAME = "es.udc.apm.classroommanagement.USER_SURNAME";
+
+    public final static String ROOM_1 = "ROOM_1";
+    public final static String ROOM_2 = "ROOM_2";
+    public final static String ROOM_3 = "ROOM_3";
+    public final static String ROOM_4 = "ROOM_4";
+    public final static String ROOM_5 = "ROOM_5";
 }
