@@ -61,9 +61,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
     // Our renderer:
     private ImageTargetRenderer mRenderer;
 
-    // The textures we will use for rendering:
-    private Vector<Texture> mTextures;
-
     private boolean mSwitchDatasetAsap = false;
     private boolean mFlash = false;
     private boolean mExtendedTracking = false;
@@ -99,10 +96,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
                 .initAR(getActivity(), ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 //        mGestureDetector = new GestureDetector(this, new GestureListener());
-
-        // Load any sample specific textures:
-        mTextures = new Vector<Texture>();
-        loadTextures();
 
         mIsDroidDevice = android.os.Build.MODEL.toLowerCase().startsWith(
                 "droid");
@@ -150,23 +143,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 //            return true;
 //        }
 //    }
-
-
-    // We want to load specific textures from the APK, which we will later use
-    // for rendering.
-
-    private void loadTextures()
-    {
-        mTextures.add(Texture.loadTextureFromApk("TextureTeapotBrass.png",
-                getResources().getAssets()));
-        mTextures.add(Texture.loadTextureFromApk("TextureTeapotBlue.png",
-                getResources().getAssets()));
-        mTextures.add(Texture.loadTextureFromApk("TextureTeapotRed.png",
-                getResources().getAssets()));
-        mTextures.add(Texture.loadTextureFromApk("ImageTargets/Buildings.jpeg",
-                getResources().getAssets()));
-    }
-
 
     // Called when the activity will start interacting with the user.
     @Override
@@ -258,10 +234,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
             logError(this, e);
         }
 
-        // Unload texture:
-        mTextures.clear();
-        mTextures = null;
-
         System.gc();
     }
 
@@ -278,7 +250,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
         mGlView.init(translucent, depthSize, stencilSize);
 
         mRenderer = new ImageTargetRenderer(this, vuforiaAppSession);
-        mRenderer.setTextures(mTextures);
         mGlView.setRenderer(mRenderer);
     }
 
@@ -417,10 +388,8 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
                 mContAutofocus = true;
             else
                 logInfo(this, "Unable to enable continuous autofocus");
-            //TODO Desactivas aqui?
-//            mSampleAppMenu = new SampleAppMenu(this, this, "Image Targets",
-//                    mGlView, mUILayout, null);
-//            setSampleAppMenuSettings();
+
+            mUILayout.removeAllViews();
 
         } else
         {
