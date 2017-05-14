@@ -16,17 +16,17 @@ public class RoleDAO {
 
     //Constants
     private static final String TAG = RoleDAO.class.getSimpleName();
-    private ConnectionManager connection;
+    private final ConnectionManager connection;
 
     public RoleDAO() {
+        this.connection = new ConnectionManager();
     }
 
     public List<Role> getAllRoles() {
         String query = "SELECT * FROM TROLE";
         List<Role> roles = new ArrayList<>();
         try {
-            this.connection = new ConnectionManager();
-            this.connection.executeQuery(query);
+            connection.executeQuery(query);
             while (connection.getResult().next()) {
                 short id = connection.getResult().getShort("ROL_ID");
                 String roleName = connection.getResult().getString("ROL_NAME");
@@ -35,15 +35,8 @@ public class RoleDAO {
             }
         } catch (SQLException e) {
             Log.e(TAG, e.getMessage());
-        } finally {
-            try {
-                this.connection.closeConnection();
-            } catch (SQLException e) {
-                Log.e(TAG, e.getMessage());
-            }
         }
         return roles;
-
     }
 
 }

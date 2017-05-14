@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,20 +28,18 @@ import static es.udc.apm.classroommanagement.utils.Utils.isOnline;
 import static es.udc.apm.classroommanagement.utils.Utils.logError;
 import static es.udc.apm.classroommanagement.utils.Utils.showToast;
 
-public class RegisterFragment extends Fragment {
+public class RegisterFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static String userGoogleID;
     private static String userMail;
-    private static String name;
-    private static String surname;
     private User user = null;
 
-    private RoleService roleService;
-    private UserService userService;
+    private static RoleService roleService;
+    private static UserService userService;
 
-    //Form elements for validation
-    private Button registryButton;
-    EditText editName, editSurname, emailText;
+    private EditText editName;
+    private EditText editSurname;
+    private EditText emailText;
     private Spinner roleSpinner;
 
     // Confirmation of new user
@@ -49,23 +48,13 @@ public class RegisterFragment extends Fragment {
     // Profile modification
     private boolean isModfication = false;
 
+    private SwipeRefreshLayout swipeLayout;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         roleService = new RoleService();
         userService = new UserService();
-        if (getArguments() == null) {
-            try {
-                user = userService.getUser(((MainActivity) getActivity()).getGoogleId());
-                ((MainActivity) getActivity()).showLateralMenu(true);
-                isModfication = true;
-            } catch (Exception e) {
-                logError(this, e);
-                showToast(getActivity().getApplicationContext(), getString(R.string.connection_error));
-            }
-        } else {
-            ((MainActivity) getActivity()).showLateralMenu(false);
-        }
     }
 
 
@@ -77,39 +66,19 @@ public class RegisterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_register, container, false);
-        //Load data in the form using the data from the LoginFragment or
-        //the db if the user exist in it
-        Bundle b = getArguments();
-        if (b != null) {
-            userGoogleID = b.getString(Constants.USER_GOOGLE_ID);
-            userMail = b.getString(Constants.USER_MAIL);
-            name = b.getString(Constants.USER_NAME);
-            surname = b.getString(Constants.USER_SURNAME);
-        } else {
-            userGoogleID = user.getGoogleId();
-            userMail = user.getMail();
-            name = user.getName();
-            surname = user.getLastName();
-        }
+
+        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefreshRegister);
+        swipeLayout.setOnRefreshListener(this);
+        swipeLayout.setEnabled(true);
+        swipeLayout.setRefreshing(true);
 
         roleSpinner = (Spinner) view.findViewById(R.id.role_spinner);
-
-        addItemsToSpinner();
-
-        if (isModfication) {
-            setSelectedRole();
-        }
 
         editName = (EditText) view.findViewById(R.id.name_text);
         editSurname = (EditText) view.findViewById(R.id.surname_text);
         emailText = (EditText) view.findViewById(R.id.email_text);
 
-        editName.setText(name);
-        editSurname.setText(surname);
-        emailText.setText(userMail);
-        emailText.setEnabled(false);
-
-        registryButton = (Button) view.findViewById(R.id.register_button);
+        Button registryButton = (Button) view.findViewById(R.id.register_button);
 
         registryButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -118,6 +87,55 @@ public class RegisterFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onRefresh() {
+        swipeLayout.setRefreshing(false);
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        //Load data in the form using the data from the LoginFragment or
+        //the db if the user exist in it
+        Bundle b = getArguments();
+        String name;
+        String surname;
+        if (b != null) {
+            ((MainActivity) getActivity()).showLateralMenu(false);
+            userGoogleID = b.getString(Constants.USER_GOOGLE_ID);
+            userMail = b.getString(Constants.USER_MAIL);
+            name = b.getString(Constants.USER_NAME);
+            surname = b.getString(Constants.USER_SURNAME);
+        } else {
+            try {
+                user = userService.getUser(((MainActivity) getActivity()).getGoogleId());
+                ((MainActivity) getActivity()).showLateralMenu(true);
+                isModfication = true;
+            } catch (Exception e) {
+                logError(this, e);
+                showToast(getActivity().getApplicationContext(), getString(R.string.connection_error));
+            }
+            userGoogleID = user.getGoogleId();
+            userMail = user.getMail();
+            name = user.getName();
+            surname = user.getLastName();
+        }
+
+        addItemsToSpinner();
+
+        if (isModfication) {
+            setSelectedRole();
+        }
+
+        editName.setText(name);
+        editSurname.setText(surname);
+        emailText.setText(userMail);
+        emailText.setEnabled(false);
+        swipeLayout.setEnabled(false);
+        swipeLayout.setRefreshing(false);
     }
 
     private void addItemsToSpinner() {
@@ -140,7 +158,7 @@ public class RegisterFragment extends Fragment {
             return;
         }
 
-        ArrayAdapter<Role> dataAdapter = new ArrayAdapter<Role>(this.getActivity(), android.R.layout.simple_spinner_item, roles);
+        ArrayAdapter<Role> dataAdapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_item, roles);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         roleSpinner.setAdapter(dataAdapter);
     }
@@ -216,6 +234,7 @@ public class RegisterFragment extends Fragment {
                                 } else {
                                     getActivity().getSupportFragmentManager()
                                             .beginTransaction().replace(R.id.content_frame, new GPSLocationFragment()).commit();
+                                    getActivity().setTitle(getString(R.string.menu_gps_location));
                                 }
                             }
 

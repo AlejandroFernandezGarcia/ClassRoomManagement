@@ -16,17 +16,17 @@ public class UserDAO {
 
     //Constants
     private static final String TAG = UserDAO.class.getSimpleName();
-    private ConnectionManager connection;
+    private final ConnectionManager connection;
 
     public UserDAO() {
+        this.connection = new ConnectionManager();
     }
 
     public User getUser(String googleID) {
         String query = "SELECT * FROM TUSER WHERE TUSER.USER_GOOGLE_ID=".concat(googleID);
         User user = null;
         try {
-            this.connection = new ConnectionManager();
-            this.connection.executeQuery(query);
+            connection.executeQuery(query);
             if (connection.getResult().next()) {
                 short id = connection.getResult().getShort("USER_ID");
                 String googleId = connection.getResult().getString("USER_GOOGLE_ID");
@@ -38,12 +38,6 @@ public class UserDAO {
             }
         } catch (SQLException e) {
             Log.e(TAG, e.getMessage());
-        } finally {
-            try {
-                this.connection.closeConnection();
-            } catch (SQLException e) {
-                Log.e(TAG, e.getMessage());
-            }
         }
         return user;
     }
@@ -61,16 +55,9 @@ public class UserDAO {
         insertBuilder.append(roleID).append(")");
         int res = -1;
         try {
-            this.connection = new ConnectionManager();
             res = this.connection.insert(insertBuilder.toString());
         } catch (SQLException e) {
             Log.e(TAG, e.getMessage());
-        } finally {
-            try {
-                this.connection.closeConnection();
-            } catch (SQLException e) {
-                Log.e(TAG, e.getMessage());
-            }
         }
         return res;
     }
@@ -84,16 +71,9 @@ public class UserDAO {
         updateBuilder.append(" WHERE USER_ID = ").append(id);
         int res = -1;
         try {
-            this.connection = new ConnectionManager();
             res = this.connection.update(updateBuilder.toString());
         } catch (SQLException e) {
             Log.e(TAG, e.getMessage());
-        } finally {
-            try {
-                this.connection.closeConnection();
-            } catch (SQLException e) {
-                Log.e(TAG, e.getMessage());
-            }
         }
         return res;
     }

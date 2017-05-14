@@ -1,66 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_register"
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swiperefreshRegister"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    tools:context="es.udc.apm.classroommanagement.fragments.RegisterFragment">
+    android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/name_text"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_register"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:elevation="5dp"
-        android:ems="10"
-        android:hint="@string/name_text"
-        android:inputType="textPersonName">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        tools:context="es.udc.apm.classroommanagement.fragments.RegisterFragment">
 
-        <requestFocus />
-    </EditText>
+        <EditText
+            android:id="@+id/name_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:elevation="5dp"
+            android:ems="10"
+            android:hint="@string/name_text"
+            android:inputType="textPersonName">
 
-    <EditText
-        android:id="@+id/surname_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:elevation="5dp"
-        android:ems="10"
-        android:hint="@string/surname_text"
-        android:inputType="textPersonName" />
+            <requestFocus />
+        </EditText>
 
-    <EditText
-        android:id="@+id/email_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:elevation="5dp"
-        android:ems="10"
-        android:hint="@string/email_text"
-        android:inputType="none" />
+        <EditText
+            android:id="@+id/surname_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:elevation="5dp"
+            android:ems="10"
+            android:hint="@string/surname_text"
+            android:inputType="textPersonName" />
 
-
-    <Spinner
-        android:id="@+id/role_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:elevation="5dp"
-        android:text="@string/role_text" />
-
-    <Button
-        android:id="@+id/register_button"
-        style="@style/Widget.AppCompat.Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
-        android:elevation="5dp"
-        android:text="@string/register_button"
-        android:textStyle="bold"
-        android:textColor="#FFF"
-        android:background="@drawable/selector_xml_button_register" />
+        <EditText
+            android:id="@+id/email_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:elevation="5dp"
+            android:ems="10"
+            android:hint="@string/email_text"
+            android:inputType="none" />
 
 
-</LinearLayout>
+        <Spinner
+            android:id="@+id/role_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:elevation="5dp"
+            android:text="@string/role_text" />
+
+        <Button
+            android:id="@+id/register_button"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp"
+            android:background="@drawable/selector_xml_button_register"
+            android:elevation="5dp"
+            android:text="@string/register_button"
+            android:textColor="#FFF"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

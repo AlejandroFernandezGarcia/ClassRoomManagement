@@ -17,10 +17,9 @@ public class UserService {
 
     //Constants
     private static final String TAG = UserService.class.getSimpleName();
-    private UserDAO userDao;
+    private static final UserDAO userDao = new UserDAO();
 
     public UserService() {
-        userDao = new UserDAO();
     }
 
     public User getUser(String googleID) throws ExecutionException, InterruptedException {
@@ -65,22 +64,16 @@ public class UserService {
     private class GetUserTask extends AsyncTask<String, Void, User> {
         @Override
         protected User doInBackground(String... params) {
-            if (userDao == null) {
-                userDao = new UserDAO();
-            }
             String userGoogleID = params[0];
-            User user = userDao.getUser(userGoogleID);
-            return user;
+            return userDao.getUser(userGoogleID);
         }
     }
 
     private class InsertUserTask extends AsyncTask<List<String>, Void, Integer> {
 
+        @SafeVarargs
         @Override
-        protected Integer doInBackground(List<String>... params) {
-            if (userDao == null) {
-                userDao = new UserDAO();
-            }
+        protected final Integer doInBackground(List<String>... params) {
             List<String> userDetails = params[0];
             return userDao.insertUser(userDetails.get(0), userDetails.get(1), userDetails.get(2), userDetails.get(3), Short.parseShort(userDetails.get(4)));
 
@@ -89,11 +82,9 @@ public class UserService {
     }
 
     private class UpdateUserTask extends AsyncTask<List<String>, Void, Integer> {
+        @SafeVarargs
         @Override
-        protected Integer doInBackground(List<String>... params) {
-            if (userDao == null) {
-                userDao = new UserDAO();
-            }
+        protected final Integer doInBackground(List<String>... params) {
             List<String> userUpdateFields = params[0];
             return userDao.updateUser(Short.parseShort(userUpdateFields.get(0)), userUpdateFields.get(1), userUpdateFields.get(2), Short.parseShort(userUpdateFields.get(3)));
 

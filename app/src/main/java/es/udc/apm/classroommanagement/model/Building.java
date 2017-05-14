@@ -36,16 +36,7 @@ public class Building {
 
         Building that = (Building) o;
 
-        if (Double.compare(that.getLatitude(), getLatitude()) != 0) return false;
-        if (Double.compare(that.getLongitude(), getLongitude()) != 0) return false;
-        if (getZipCode() != that.getZipCode()) return false;
-        if (!getName().equals(that.getName())) return false;
-        if (getPhone() != null ? !getPhone().equals(that.getPhone()) : that.getPhone() != null)
-            return false;
-        if (getAddress() != null ? !getAddress().equals(that.getAddress()) : that.getAddress() != null)
-            return false;
-        return getRegion() != null ? getRegion().equals(that.getRegion()) : that.getRegion() == null && (getCountry() != null ? getCountry().equals(that.getCountry()) : that.getCountry() == null);
-
+        return Double.compare(that.getLatitude(), getLatitude()) == 0 && Double.compare(that.getLongitude(), getLongitude()) == 0 && getZipCode() == that.getZipCode() && getName().equals(that.getName()) && (getPhone() != null ? getPhone().equals(that.getPhone()) : that.getPhone() == null && (getAddress() != null ? getAddress().equals(that.getAddress()) : that.getAddress() == null && (getRegion() != null ? getRegion().equals(that.getRegion()) : that.getRegion() == null && (getCountry() != null ? getCountry().equals(that.getCountry()) : that.getCountry() == null))));
     }
 
     @Override
