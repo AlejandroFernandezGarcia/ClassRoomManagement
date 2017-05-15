@@ -16,6 +16,8 @@ public class Building {
     private String region;
     private String country;
 
+    public Building(){}
+
     public Building(short id,double latitude, double longitude, String name, String phone, String address,
                     int zipCode, String region, String country) {
         this.id = id;

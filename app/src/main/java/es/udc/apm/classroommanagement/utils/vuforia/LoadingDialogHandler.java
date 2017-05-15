@@ -30,10 +30,6 @@ public final class LoadingDialogHandler extends Handler
     public void handleMessage(Message msg)
     {
         Activity imageTargets = mActivity.get();
-        if (imageTargets == null)
-        {
-            return;
-        }
 
         if (msg.what == SHOW_LOADING_DIALOG)
         {

@@ -33,6 +33,7 @@ import es.udc.apm.classroommanagement.utils.vuforia.LoadingDialogHandler;
 import es.udc.apm.classroommanagement.utils.vuforia.ApplicationControl;
 import es.udc.apm.classroommanagement.utils.vuforia.ApplicationException;
 import es.udc.apm.classroommanagement.utils.vuforia.ApplicationGLView;
+import es.udc.apm.classroommanagement.utils.vuforia.ScanningResultDialogHandler;
 
 import static es.udc.apm.classroommanagement.utils.Utils.logError;
 import static es.udc.apm.classroommanagement.utils.Utils.logInfo;
@@ -60,8 +61,10 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
     private boolean mExtendedTracking = false;
 
     private RelativeLayout mUILayout;
+    private RelativeLayout scanResultLayout;
 
     public LoadingDialogHandler loadingDialogHandler = new LoadingDialogHandler(getActivity());
+    public ScanningResultDialogHandler scanningResultDialogHandler = new ScanningResultDialogHandler(getActivity());
 
     // Alert Dialog used to display SDK errors
     private AlertDialog mErrorDialog;
@@ -82,6 +85,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
         vuforiaAppSession = new ApplicationSession(this);
 
         startLoadingAnimation();
+        initScanningResultView();
         mDatasetStrings.add("ApmMarks.xml");
 
         vuforiaAppSession
@@ -96,8 +100,8 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_indoor_location, container, false);
-        return view;
+//        View view = inflater.inflate(R.layout.fragment_indoor_location, container, false);
+        return mGlView;
     }
 
     // Process Single Tap event to trigger autofocus
@@ -223,7 +227,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
         int stencilSize = 0;
         boolean translucent = Vuforia.requiresAlpha();
 
-        mGlView = new ApplicationGLView(this.getActivity());
+        mGlView = new ApplicationGLView(this.getContext());
         mGlView.init(translucent, depthSize, stencilSize);
 
         mRenderer = new ImageTargetRenderer(this, vuforiaAppSession);
@@ -232,15 +236,14 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 
     private void startLoadingAnimation()
     {
-        mUILayout = (RelativeLayout) View.inflate(this.getActivity(), R.layout.camera_overlay,
+        mUILayout = (RelativeLayout) View.inflate(this.getActivity(), R.layout.camera_overlay_progress_bar,
                 null);
 
         mUILayout.setVisibility(View.VISIBLE);
         mUILayout.setBackgroundColor(Color.BLACK);
 
         // Gets a reference to the loading dialog
-        loadingDialogHandler.mLoadingDialogContainer = mUILayout
-                .findViewById(R.id.loading_indicator);
+        loadingDialogHandler.mLoadingDialogContainer = mUILayout.findViewById(R.id.loading_indicator);
 
         // Shows the loading indicator at start
         loadingDialogHandler
@@ -250,6 +253,16 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
         getActivity().addContentView(mUILayout, new LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT));
 
+    }
+
+    private void initScanningResultView(){
+        scanResultLayout = (RelativeLayout) View.inflate(this.getActivity(),R.layout.camera_overlay_scanning_result,null);
+        scanResultLayout.setVisibility(View.VISIBLE);
+
+        scanningResultDialogHandler.mScanningResultContainer = scanResultLayout.findViewById(R.id.class_name);
+        scanningResultDialogHandler.sendEmptyMessage(ScanningResultDialogHandler.HIDE_DIALOG);
+        getActivity().addContentView(scanResultLayout, new LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT));
     }
 
     // Methods to load and destroy tracking data.
@@ -341,7 +354,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 
             // Sets the UILayout to be drawn in front of the camera
             mUILayout.bringToFront();
-
+            scanResultLayout.bringToFront();
             // Sets the layout background to transparent
             mUILayout.setBackgroundColor(Color.TRANSPARENT);
 
@@ -361,7 +374,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
             else
                 logInfo(this, "Unable to enable continuous autofocus");
 
-            mUILayout.removeAllViews();
+            loadingDialogHandler.sendEmptyMessage(LoadingDialogHandler.HIDE_LOADING_DIALOG);
 
         } else
         {

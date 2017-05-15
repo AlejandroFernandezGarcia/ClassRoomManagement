@@ -7,10 +7,13 @@ import com.vuforia.State;
 import com.vuforia.Trackable;
 import com.vuforia.TrackableResult;
 
+import java.util.concurrent.ExecutionException;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import es.udc.apm.classroommanagement.fragments.IndoorLocationFragment;
+import es.udc.apm.classroommanagement.services.RoomService;
 
 import static es.udc.apm.classroommanagement.utils.Utils.logInfo;
 
@@ -77,7 +80,8 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, AppRendererC
 
     // Function for initializing the renderer.
     private void initRendering() {
-            }
+
+    }
 
     public void updateConfiguration() {
         mAppRenderer.onConfigurationChanged(mIsActive);
@@ -90,15 +94,26 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, AppRendererC
         // Renders video background replacing Renderer.DrawVideoBackground()
         mAppRenderer.renderVideoBackground();
 
-        // Did we find any trackables this frame?
-        for (int tIdx = 0; tIdx < state.getNumTrackableResults(); tIdx++) {
-            TrackableResult result = state.getTrackableResult(tIdx);
+        //Found a trackeable element
+        if(state.getNumTrackableResults() != 0){
+            TrackableResult result = state.getTrackableResult(0);
             Trackable trackable = result.getTrackable();
-            //TODO Aqui el trackable.getNAme devuelve el nombre de la imagen escaneada
             logInfo(this,"Scanned "+trackable.getName());
-
-            VuforiaUtils.checkGLError("Render Frame");
+            int roomId = Integer.parseInt(trackable.getName().replace("ROOM_",""));
+//            try {
+//                logInfo(this, new RoomService().getRoomInfo(roomId).toString());
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+            mActivity.scanningResultDialogHandler
+                    .sendEmptyMessage(roomId);
+        }else{
+            mActivity.scanningResultDialogHandler
+                    .sendEmptyMessage(ScanningResultDialogHandler.HIDE_DIALOG);
         }
+        VuforiaUtils.checkGLError("Render Frame");
     }
 }
 
