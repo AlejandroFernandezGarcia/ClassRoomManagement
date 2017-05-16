@@ -134,23 +134,26 @@ public class GPSLocationFragment extends Fragment implements
     }
 
     private boolean isLocationServiceEnabled() {
-        Context context = getActivity().getApplicationContext();
-        LocationManager locationManager = null;
-        boolean gps_enabled = false, network_enabled = false;
+        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Context context = getActivity().getApplicationContext();
+            LocationManager locationManager = null;
+            boolean gps_enabled = false, network_enabled = false;
 
-        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        try {
-            gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        } catch (Exception ex) {
+            locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            try {
+                gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            } catch (Exception ex) {
+            }
+
+            try {
+                network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            } catch (Exception ex) {
+            }
+
+            return gps_enabled || network_enabled;
         }
-
-        try {
-            network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        } catch (Exception ex) {
-        }
-
-        return gps_enabled || network_enabled;
-
+        else
+            return false;
     }
 
     private void enableLocationUpdates() {
@@ -193,7 +196,7 @@ public class GPSLocationFragment extends Fragment implements
                 }
             });
         } else {
-            showToast(getActivity().getApplicationContext(), "El GPS está deshabilitado.");
+            showToast(getActivity().getApplicationContext(), "El GPS está deshabilitado o no tiene permisos de localización.");
         }
     }
 
@@ -326,6 +329,7 @@ public class GPSLocationFragment extends Fragment implements
 
         mapa = map;
         mapa.getUiSettings().setZoomControlsEnabled(true);
+        mapa.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
 
         if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;

@@ -4,18 +4,18 @@ package es.udc.apm.classroommanagement.utils;
  * Created by david on 13/05/17.
  */
 
-import android.annotation.SuppressLint;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.model.Marker;
+import com.squareup.picasso.Picasso;
+
 import es.udc.apm.classroommanagement.R;
 import android.content.Context;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 public class PopupAdapter implements InfoWindowAdapter {
     private View popup=null;
@@ -26,6 +26,8 @@ public class PopupAdapter implements InfoWindowAdapter {
         this.inflater=inflater;
         this.context = context;
     }
+
+
 
     @Override
     public View getInfoWindow(Marker marker) {
@@ -39,18 +41,27 @@ public class PopupAdapter implements InfoWindowAdapter {
         }
         TextView tv=(TextView)popup.findViewById(R.id.title);
         tv.setText(marker.getTitle());
-        if (marker.getTitle() != "Usted está aquí") {
-            UrlImageView urlImg = ((UrlImageView) popup.findViewById(R.id.thumbnail));
-            try {
-
-                urlImg.setImageURL(new URL("http://www.iearobotics.com/personal/juan/conferencias/conf16/images/facultad.png"));
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-
+        if (marker.getTitle().compareTo("Usted está aquí") != 0) {
+            String snippet = marker.getSnippet();
+            String[] tmp = snippet.split(";");
+            String address = tmp[0];
+            String phone = tmp[1];
+            String web_url = tmp[2];
+            String img_url = tmp[3];
+            Log.i("POPUP", img_url);
+            ImageView img_view = ((ImageView) popup.findViewById(R.id.thumbnail));
+            Picasso.with(context).load(img_url).into(img_view);
             tv = (TextView) popup.findViewById(R.id.snippet);
-            tv.setText(marker.getSnippet());
+            tv.setText("Dirección: " + address + "\n" + "Tlf: " + phone + "\n" + "Web: " + web_url);
+        }
+        else{
+            tv = (TextView) popup.findViewById(R.id.snippet);
+            tv.setText("");
         }
         return(popup);
     }
+
 }
+
+
+

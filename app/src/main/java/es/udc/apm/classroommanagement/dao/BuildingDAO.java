@@ -33,7 +33,9 @@ public class BuildingDAO {
                 String region = connection.getResult().getString("BUILD_REGION");
                 String country = connection.getResult().getString("BUILD_COUNTRY");
                 String phone = connection.getResult().getString("BUILD_PHONE");
-                Building building = new Building(id, latitude, longitude, name, phone, address, zipcode, region, country);
+                String web_url = connection.getResult().getString("BUILD_URL");
+                String img_url = connection.getResult().getString("BUILD_IMG_URL");
+                Building building = new Building(id, latitude, longitude, name, phone, address, zipcode, region, country, web_url, img_url);
                 result.add(building);
             }
         } catch (SQLException e) {
