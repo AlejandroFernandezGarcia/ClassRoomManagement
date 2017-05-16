@@ -18,6 +18,8 @@ public class Building {
     private String web_url;
     private String img_url;
 
+    public Building(){}
+
     public Building(short id,double latitude, double longitude, String name, String phone, String address,
                     int zipCode, String region, String country, String web_url, String img_url) {
         this.id = id;

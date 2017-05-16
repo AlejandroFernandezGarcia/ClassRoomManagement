@@ -52,4 +52,13 @@
     <string name="INIT_LICENSE_ERROR_UNKNOWN_ERROR">Failed to initialize Vuforia.</string>
     <string name="button_OK">OK</string>
 
+    <!--Days of week-->
+    <string name="MONDAY">L</string>
+    <string name="TUESDAY">M</string>
+    <string name="WEDNESDAY">X</string>
+    <string name="THURSDAY">J</string>
+    <string name="FRIDAY">V</string>
+    <string name="SATURDAY">S</string>
+    <string name="SUNDAY">D</string>
+
 </resources>
