@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private String userName;
     private String googleId;
     private SmoothActionBarDrawerToggle drawerToggle;
+    private NavigationView navView;
 
     //region Getters and setters
 
@@ -45,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void setGoogleId(String googleId) {
         this.googleId = googleId;
+    }
+
+    public NavigationView getNavView() {
+        return navView;
     }
 
     //endregion
@@ -65,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
         showLateralMenu(false);
 
-        NavigationView navView = (NavigationView) findViewById(R.id.navview);
+        navView = (NavigationView) findViewById(R.id.navview);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_frame, new LoginFragment())

@@ -52,6 +52,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         userService = new UserService();
 
         SignInButton btnSignIn = (SignInButton) view.findViewById(R.id.btn_sign_in);
+
         // Customizing G+ button
 
         btnSignIn.setSize(SignInButton.SIZE_STANDARD);
@@ -202,6 +203,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_frame, fragment)
                 .commit();
+
+        if (fragment.getClass().equals(GPSLocationFragment.class)) {
+            ((MainActivity) getActivity()).getNavView().getMenu().getItem(0).setChecked(true);
+        }
 
         getActivity().setTitle(title);
     }

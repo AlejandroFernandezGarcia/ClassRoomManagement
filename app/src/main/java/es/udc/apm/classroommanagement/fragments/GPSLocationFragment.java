@@ -248,12 +248,6 @@ public class GPSLocationFragment extends Fragment implements
     public void onPause() {
         super.onPause();
         disableLocationUpdates();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        disableLocationUpdates();
         apiClient.disconnect();
     }
 
