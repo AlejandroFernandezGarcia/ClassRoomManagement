@@ -211,7 +211,7 @@ public class RegisterFragment extends Fragment implements SwipeRefreshLayout.OnR
                             // if this button is clicked, save user in database
                             try {
                                 if (userService != null) {
-                                    //TODO Comprobar si existe, si existe actualiza sino inserta
+                                    //Check if the user exist, for insert or update
                                     if (isModfication && user != null) {
                                         userService.updateUser(user.getId(), name, surname, selectedRole.getId());
                                     } else {

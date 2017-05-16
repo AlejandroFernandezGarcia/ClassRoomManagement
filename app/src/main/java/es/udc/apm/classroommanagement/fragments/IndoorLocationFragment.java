@@ -64,7 +64,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
     private RelativeLayout scanResultLayout;
 
     public LoadingDialogHandler loadingDialogHandler = new LoadingDialogHandler(getActivity());
-    public ScanningResultDialogHandler scanningResultDialogHandler = new ScanningResultDialogHandler(getActivity());
+    public ScanningResultDialogHandler scanningResultDialogHandler;
 
     // Alert Dialog used to display SDK errors
     private AlertDialog mErrorDialog;
@@ -256,10 +256,11 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
     }
 
     private void initScanningResultView(){
+        scanningResultDialogHandler = new ScanningResultDialogHandler(getActivity());
         scanResultLayout = (RelativeLayout) View.inflate(this.getActivity(),R.layout.camera_overlay_scanning_result,null);
         scanResultLayout.setVisibility(View.VISIBLE);
 
-        scanningResultDialogHandler.mScanningResultContainer = scanResultLayout.findViewById(R.id.class_name);
+        scanningResultDialogHandler.mScanningResultContainer = scanResultLayout.findViewById(R.id.scanning_result);
         scanningResultDialogHandler.sendEmptyMessage(ScanningResultDialogHandler.HIDE_DIALOG);
         getActivity().addContentView(scanResultLayout, new LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT));

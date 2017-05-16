@@ -95,21 +95,15 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, AppRendererC
         mAppRenderer.renderVideoBackground();
 
         //Found a trackeable element
-        if(state.getNumTrackableResults() != 0){
+        if (state.getNumTrackableResults() != 0) {
             TrackableResult result = state.getTrackableResult(0);
             Trackable trackable = result.getTrackable();
-            logInfo(this,"Scanned "+trackable.getName());
-            int roomId = Integer.parseInt(trackable.getName().replace("ROOM_",""));
-//            try {
-//                logInfo(this, new RoomService().getRoomInfo(roomId).toString());
-//            } catch (ExecutionException e) {
-//                e.printStackTrace();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+            logInfo(this, "Scanned " + trackable.getName());
+            int roomId = Integer.parseInt(trackable.getName().replace("ROOM_", ""));
+
             mActivity.scanningResultDialogHandler
                     .sendEmptyMessage(roomId);
-        }else{
+        } else {
             mActivity.scanningResultDialogHandler
                     .sendEmptyMessage(ScanningResultDialogHandler.HIDE_DIALOG);
         }

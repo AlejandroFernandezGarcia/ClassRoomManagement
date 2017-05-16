@@ -27,13 +27,15 @@ public class RoomDAO {
     }
 
     public Room getRoomInfo(short roomId) {
-        String query = ("SELECT r.ROOM_ID,b.BUILD_NAME, r.ROOM_NAME, e.EVENT_NAME, e.EVENT_SPEAKER," +
-                "et.ETYPE_NAME, sc.SCHEDULE_START_HOUR, sc.SCHEDULE_END_HOUR " +
+        String query = ("SELECT r.ROOM_ID,b.BUILD_NAME, r.ROOM_NAME, e.EVENT_NAME, e.EVENT_SPEAKER, e.EVENT_DESC," +
+                "et.ETYPE_NAME, sc.SCHEDULE_START_HOUR, sc.SCHEDULE_END_HOUR, sc.SCHEDULE_DAY_MONDAY," +
+                "sc.SCHEDULE_DAY_TUESDAY, sc.SCHEDULE_DAY_WEDNESDAY, sc.SCHEDULE_DAY_THURSDAY, sc.SCHEDULE_DAY_FRIDAY," +
+                "sc.SCHEDULE_DAY_SATURDAY, sc.SCHEDULE_DAY_SUNDAY " +
                 "FROM TROOM r " +
-                "INNER JOIN TBUILDING b ON r.BUILD_ID = b.BUILD_ID " +
-                "INNER JOIN TEVENT e ON e.ROOM_ID = r.ROOM_ID " +
-                "INNER JOIN TEVENT_TYPE et ON et.ETYPE_ID = e.ETYPE_ID " +
-                "INNER JOIN TSCHEDULE sc ON sc.EVENT_ID = e.EVENT_ID " +
+                "LEFT JOIN TBUILDING b ON r.BUILD_ID = b.BUILD_ID " +
+                "LEFT JOIN TEVENT e ON e.ROOM_ID = r.ROOM_ID " +
+                "LEFT JOIN TEVENT_TYPE et ON et.ETYPE_ID = e.ETYPE_ID " +
+                "LEFT JOIN TSCHEDULE sc ON sc.EVENT_ID = e.EVENT_ID " +
                 "WHERE r.ROOM_ID=") + roomId;
         Room room = new Room();
         room.setBuilding(new Building());
@@ -45,16 +47,27 @@ public class RoomDAO {
                 room.setName(connection.getResult().getString("r.ROOM_NAME"));
                 room.getBuilding().setName(connection.getResult().getString("b.BUILD_NAME"));
                 Event event = new Event();
-                event.setName(connection.getResult().getString("e.EVENT_NAME"));
-                event.setSpeaker(connection.getResult().getString("e.EVENT_SPEAKER"));
-                event.setType(new EventType((short) 1, connection.getResult().getString("et.ETYPE_NAME")));
-                event.setScheduleList(new ArrayList<Schedule>());
+                if (connection.getResult().getTime("sc.SCHEDULE_START_HOUR") != null) {
+                    event.setName(connection.getResult().getString("e.EVENT_NAME"));
+                    event.setSpeaker(connection.getResult().getString("e.EVENT_SPEAKER"));
+                    event.setType(new EventType((short) 1, connection.getResult().getString("et.ETYPE_NAME")));
+                    event.setScheduleList(new ArrayList<Schedule>());
+                    event.setDescription(connection.getResult().getString("e.EVENT_DESC"));
 
-                Schedule schedule = new Schedule();
-                schedule.setStartHour(connection.getResult().getTime("sc.SCHEDULE_START_HOUR"));
-                schedule.setEndHour(connection.getResult().getTime("sc.SCHEDULE_END_HOUR"));
-                event.getScheduleList().add(schedule);
-                room.getEvents().add(event);
+                    Schedule schedule = new Schedule();
+                    schedule.setStartHour(connection.getResult().getTime("sc.SCHEDULE_START_HOUR"));
+                    schedule.setEndHour(connection.getResult().getTime("sc.SCHEDULE_END_HOUR"));
+                    schedule.setMonday(connection.getResult().getBoolean("sc.SCHEDULE_DAY_MONDAY"));
+                    schedule.setTuesday(connection.getResult().getBoolean("sc.SCHEDULE_DAY_TUESDAY"));
+                    schedule.setWednesday(connection.getResult().getBoolean("sc.SCHEDULE_DAY_WEDNESDAY"));
+                    schedule.setThursday(connection.getResult().getBoolean("sc.SCHEDULE_DAY_THURSDAY"));
+                    schedule.setFriday(connection.getResult().getBoolean("sc.SCHEDULE_DAY_FRIDAY"));
+                    schedule.setSaturday(connection.getResult().getBoolean("sc.SCHEDULE_DAY_SATURDAY"));
+                    schedule.setSunday(connection.getResult().getBoolean("sc.SCHEDULE_DAY_SUNDAY"));
+
+                    event.getScheduleList().add(schedule);
+                    room.getEvents().add(event);
+                }
             }
         } catch (SQLException e) {
             logError(this, e);
