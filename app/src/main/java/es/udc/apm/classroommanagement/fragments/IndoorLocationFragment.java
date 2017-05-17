@@ -1,11 +1,16 @@
 package es.udc.apm.classroommanagement.fragments;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
+import android.support.v13.app.FragmentCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +40,7 @@ import es.udc.apm.classroommanagement.utils.vuforia.ApplicationException;
 import es.udc.apm.classroommanagement.utils.vuforia.ApplicationGLView;
 import es.udc.apm.classroommanagement.utils.vuforia.ScanningResultDialogHandler;
 
+import static es.udc.apm.classroommanagement.utils.Utils.showToast;
 import static es.udc.apm.classroommanagement.utils.Utils.logError;
 import static es.udc.apm.classroommanagement.utils.Utils.logInfo;
 
@@ -82,19 +88,35 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
         super.onCreate(savedInstanceState);
         ((MainActivity)getActivity()).showLateralMenu(true);
 
-        vuforiaAppSession = new ApplicationSession(this);
+        if (ContextCompat.checkSelfPermission(this.getContext(), android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            this.requestPermissions(new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+        } else {
 
-        startLoadingAnimation();
-        initScanningResultView();
-        mDatasetStrings.add("ApmMarks.xml");
+            vuforiaAppSession = new ApplicationSession(this);
 
-        vuforiaAppSession
-                .initAR(getActivity(), ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            startLoadingAnimation();
+            initScanningResultView();
+            mDatasetStrings.add("ApmMarks.xml");
 
-//        mGestureDetector = new GestureDetector(this, new GestureListener());
+            vuforiaAppSession
+                    .initAR(getActivity(), ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        mIsDroidDevice = android.os.Build.MODEL.toLowerCase().startsWith(
-                "droid");
+            //        mGestureDetector = new GestureDetector(this, new GestureListener());
+
+            mIsDroidDevice = android.os.Build.MODEL.toLowerCase().startsWith(
+                    "droid");
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 0) {
+            if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                showToast(getActivity().getApplicationContext(), "No tiene permisos para acceder a la cámara");
+            }
+        }
     }
 
     @Override

@@ -134,26 +134,24 @@ public class GPSLocationFragment extends Fragment implements
     }
 
     private boolean isLocationServiceEnabled() {
-        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Context context = getActivity().getApplicationContext();
-            LocationManager locationManager = null;
-            boolean gps_enabled = false, network_enabled = false;
 
-            locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-            try {
-                gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            } catch (Exception ex) {
-            }
+        Context context = getActivity().getApplicationContext();
+        LocationManager locationManager = null;
+        boolean gps_enabled = false, network_enabled = false;
 
-            try {
-                network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-            } catch (Exception ex) {
-            }
-
-            return gps_enabled || network_enabled;
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        try {
+            gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch (Exception ex) {
         }
-        else
-            return false;
+
+        try {
+            network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch (Exception ex) {
+        }
+
+        return gps_enabled || network_enabled;
+
     }
 
     private void enableLocationUpdates() {
