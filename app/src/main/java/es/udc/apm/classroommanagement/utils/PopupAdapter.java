@@ -5,7 +5,6 @@ package es.udc.apm.classroommanagement.utils;
  */
 
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,7 +12,6 @@ import android.widget.TextView;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.model.Marker;
 import com.squareup.picasso.Picasso;
-
 import es.udc.apm.classroommanagement.R;
 import android.content.Context;
 
@@ -27,8 +25,6 @@ public class PopupAdapter implements InfoWindowAdapter {
         this.context = context;
     }
 
-
-
     @Override
     public View getInfoWindow(Marker marker) {
         return(null);
@@ -39,24 +35,28 @@ public class PopupAdapter implements InfoWindowAdapter {
         if (popup == null) {
             popup=inflater.inflate(R.layout.popup, null);
         }
-        TextView tv=(TextView)popup.findViewById(R.id.title);
-        tv.setText(marker.getTitle());
-        if (marker.getTitle().compareTo("Usted está aquí") != 0) {
+        TextView title=(TextView)popup.findViewById(R.id.title);
+        title.setText(marker.getTitle());
+        ImageView img_view = ((ImageView) popup.findViewById(R.id.thumbnail));
+        TextView snippet_tv = (TextView) popup.findViewById(R.id.snippet);
+        if (marker.getTitle().compareTo(context.getString(R.string.popup_your_location)) != 0) {
             String snippet = marker.getSnippet();
             String[] tmp = snippet.split(";");
             String address = tmp[0];
             String phone = tmp[1];
             String web_url = tmp[2];
             String img_url = tmp[3];
-            Log.i("POPUP", img_url);
-            ImageView img_view = ((ImageView) popup.findViewById(R.id.thumbnail));
+            img_view.setVisibility(View.VISIBLE);
+            snippet_tv.setVisibility(View.VISIBLE);
             Picasso.with(context).load(img_url).into(img_view);
-            tv = (TextView) popup.findViewById(R.id.snippet);
-            tv.setText("Dirección: " + address + "\n" + "Tlf: " + phone + "\n" + "Web: " + web_url);
+            snippet_tv.setText(context.getString(R.string.popup_address)+ " " + address + "\n" +
+                    context.getString(R.string.popup_phone) + " " + phone + "\n" +
+                    context.getString(R.string.popup_web) + " " + web_url);
         }
         else{
-            tv = (TextView) popup.findViewById(R.id.snippet);
-            tv.setText("");
+            img_view.setVisibility(View.GONE);
+            snippet_tv.setVisibility(View.GONE);
+            snippet_tv.setText("");
         }
         return(popup);
     }

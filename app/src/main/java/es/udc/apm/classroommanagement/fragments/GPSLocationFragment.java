@@ -183,18 +183,18 @@ public class GPSLocationFragment extends Fragment implements
                             try {
                                 status.startResolutionForResult(getActivity(), PETICION_CONFIG_UBICACION);
                             } catch (IntentSender.SendIntentException e) {
-                                showToast(getActivity().getApplicationContext(), "Error al intentar solucionar configuración de ubicación");
+                                showToast(getActivity().getApplicationContext(), getString(R.string.location_conf_request));
                             }
 
                             break;
                         case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                            showToast(getActivity().getApplicationContext(), "No se puede cumplir la configuración de ubicación necesaria");
+                            showToast(getActivity().getApplicationContext(), getString(R.string.location_no_settings_change));
                             break;
                     }
                 }
             });
         } else {
-            showToast(getActivity().getApplicationContext(), "El GPS está deshabilitado o no tiene permisos de localización.");
+            showToast(getActivity().getApplicationContext(), getString(R.string.location_disabled));
         }
     }
 
@@ -301,7 +301,7 @@ public class GPSLocationFragment extends Fragment implements
                         startLocationUpdates();
                         break;
                     case Activity.RESULT_CANCELED:
-                        showToast(getActivity().getApplicationContext(), "El usuario no ha realizado los cambios de configuración necesarios");
+                        showToast(getActivity().getApplicationContext(), getString(R.string.location_settings_change));
                         break;
                 }
                 break;
@@ -352,7 +352,7 @@ public class GPSLocationFragment extends Fragment implements
             } else {
                 personMarker = mapa.addMarker(new MarkerOptions()
                         .position(latLng)
-                        .title("Usted está aquí")
+                        .title(getString(R.string.popup_your_location))
                         .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_person)));
 
             }
