@@ -199,8 +199,10 @@ public class GPSLocationFragment extends Fragment implements
     }
 
     private void disableLocationUpdates() {
-        if (isLocationServiceEnabled()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(apiClient, this);
+        if(apiClient.isConnected()) {
+            if (isLocationServiceEnabled()) {
+                LocationServices.FusedLocationApi.removeLocationUpdates(apiClient, this);
+            }
         }
     }
 
