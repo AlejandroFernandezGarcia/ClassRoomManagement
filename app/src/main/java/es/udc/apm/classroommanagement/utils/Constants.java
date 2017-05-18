@@ -15,4 +15,7 @@ public class Constants {
     public final static String ROOM_3 = "ROOM_3";
     public final static String ROOM_4 = "ROOM_4";
     public final static String ROOM_5 = "ROOM_5";
+
+    public final static int REQUEST_VIBRATOR_PERMISSION = 1;
+    public final static int REQUEST_CAMERA_PERMISSION = 2;
 }

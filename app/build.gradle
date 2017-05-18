@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 
-def VUFORIA_SDK_DIR = '../lib/'
+def LIBS = '../lib/'
 def NATIVE_LIB_DIR = 'lib/'
 def JAR_DIR = 'java/vuforia'
 
@@ -10,7 +10,7 @@ android {
 
     sourceSets.main {
         jni.srcDirs = []
-        jniLibs.srcDir "$VUFORIA_SDK_DIR/$NATIVE_LIB_DIR/"
+        jniLibs.srcDir "$LIBS/$NATIVE_LIB_DIR/"
     }
 
     defaultConfig {
@@ -32,6 +32,13 @@ android {
                 abiFilters "armeabi-v7a"
             }
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            debuggable true
+            ndk {
+                abiFilters "armeabi-v7a"
+            }
         }
     }
 }
@@ -57,8 +64,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:multidex:1.0.1'
     testCompile 'junit:junit:4.12'
-    compile files("$VUFORIA_SDK_DIR/$JAR_DIR/Vuforia.jar")
-    compile files("$VUFORIA_SDK_DIR/picasso-2.5.2.jar")
+    compile files("$LIBS/$JAR_DIR/Vuforia.jar")
+    compile files("$LIBS/picasso-2.5.2.jar")
 }
 
 apply plugin: 'com.google.gms.google-services'
