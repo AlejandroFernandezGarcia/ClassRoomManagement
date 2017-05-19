@@ -32,6 +32,7 @@ import java.util.ArrayList;
 
 import es.udc.apm.classroommanagement.MainActivity;
 import es.udc.apm.classroommanagement.R;
+import es.udc.apm.classroommanagement.utils.Constants;
 import es.udc.apm.classroommanagement.utils.vuforia.ApplicationSession;
 import es.udc.apm.classroommanagement.utils.vuforia.ImageTargetRenderer;
 import es.udc.apm.classroommanagement.utils.vuforia.LoadingDialogHandler;
@@ -79,33 +80,29 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 
     ///endregion
 
-    public IndoorLocationFragment(){
+    public IndoorLocationFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((MainActivity)getActivity()).showLateralMenu(true);
+        ((MainActivity) getActivity()).showLateralMenu(true);
 
-
-
-            vuforiaAppSession = new ApplicationSession(this);
+        vuforiaAppSession = new ApplicationSession(this);
 
             startLoadingAnimation();
             initScanningResultView();
             mDatasetStrings.add("ApmMarks.xml");
 
-            vuforiaAppSession
-                    .initAR(getActivity(), ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            vuforiaAppSession.initAR(getActivity(), ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
             //        mGestureDetector = new GestureDetector(this, new GestureListener());
 
             mIsDroidDevice = android.os.Build.MODEL.toLowerCase().startsWith(
                     "droid");
+
     }
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -152,28 +149,23 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 
     // Called when the activity will start interacting with the user.
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
 
         // This is needed for some Droid devices to force portrait
-        if (mIsDroidDevice)
-        {
+        if (mIsDroidDevice) {
             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
 
-        try
-        {
+        try {
             vuforiaAppSession.resumeAR();
-        } catch (ApplicationException e)
-        {
-             logError(this, e);
+        } catch (ApplicationException e) {
+            logError(this, e);
         }
 
         // Resume the GL view:
-        if (mGlView != null)
-        {
+        if (mGlView != null) {
             mGlView.setVisibility(View.VISIBLE);
             mGlView.onResume();
         }
@@ -183,8 +175,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 
     // Callback for configuration changes the activity handles itself
     @Override
-    public void onConfigurationChanged(Configuration config)
-    {
+    public void onConfigurationChanged(Configuration config) {
         super.onConfigurationChanged(config);
 
         vuforiaAppSession.onConfigurationChanged();
@@ -193,36 +184,29 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 
     // Called when the system is about to start resuming a previous activity.
     @Override
-    public void onPause()
-    {
+    public void onPause() {
         super.onPause();
 
-        if (mGlView != null)
-        {
+        if (mGlView != null) {
             mGlView.setVisibility(View.INVISIBLE);
             mGlView.onPause();
         }
 
-        try
-        {
+        try {
             vuforiaAppSession.pauseAR();
-        } catch (ApplicationException e)
-        {
+        } catch (ApplicationException e) {
             logError(this, e.getString());
         }
     }
 
     // The final call you receive before your activity is destroyed.
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         super.onDestroy();
 
-        try
-        {
+        try {
             vuforiaAppSession.stopAR();
-        } catch (ApplicationException e)
-        {
+        } catch (ApplicationException e) {
             logError(this, e);
         }
 
@@ -230,8 +214,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
     }
 
     // Initializes AR application components.
-    private void initApplicationAR()
-    {
+    private void initApplicationAR() {
         // Create OpenGL ES view:
         int depthSize = 16;
         int stencilSize = 0;
@@ -244,8 +227,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
         mGlView.setRenderer(mRenderer);
     }
 
-    private void startLoadingAnimation()
-    {
+    private void startLoadingAnimation() {
         mUILayout = (RelativeLayout) View.inflate(this.getActivity(), R.layout.camera_overlay_progress_bar,
                 null);
 
@@ -265,9 +247,9 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 
     }
 
-    private void initScanningResultView(){
-        scanningResultDialogHandler = new ScanningResultDialogHandler(getActivity());
-        scanResultLayout = (RelativeLayout) View.inflate(this.getActivity(),R.layout.camera_overlay_scanning_result,null);
+    private void initScanningResultView() {
+        scanningResultDialogHandler = new ScanningResultDialogHandler(this);
+        scanResultLayout = (RelativeLayout) View.inflate(this.getActivity(), R.layout.camera_overlay_scanning_result, null);
         scanResultLayout.setVisibility(View.VISIBLE);
 
         scanningResultDialogHandler.mScanningResultContainer = scanResultLayout.findViewById(R.id.scanning_result);
@@ -278,8 +260,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 
     // Methods to load and destroy tracking data.
     @Override
-    public boolean doLoadTrackersData()
-    {
+    public boolean doLoadTrackersData() {
         TrackerManager tManager = TrackerManager.getInstance();
         ObjectTracker objectTracker = (ObjectTracker) tManager
                 .getTracker(ObjectTracker.getClassType());
@@ -301,11 +282,9 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
             return false;
 
         int numTrackables = mCurrentDataset.getNumTrackables();
-        for (int count = 0; count < numTrackables; count++)
-        {
+        for (int count = 0; count < numTrackables; count++) {
             Trackable trackable = mCurrentDataset.getTrackable(count);
-            if(isExtendedTrackingActive())
-            {
+            if (isExtendedTrackingActive()) {
                 trackable.startExtendedTracking();
             }
 
@@ -318,8 +297,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
     }
 
     @Override
-    public boolean doUnloadTrackersData()
-    {
+    public boolean doUnloadTrackersData() {
         // Indicate if the trackers were unloaded correctly
         boolean result = true;
 
@@ -329,14 +307,11 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
         if (objectTracker == null)
             return false;
 
-        if (mCurrentDataset != null && mCurrentDataset.isActive())
-        {
+        if (mCurrentDataset != null && mCurrentDataset.isActive()) {
             if (objectTracker.getActiveDataSet(0).equals(mCurrentDataset)
-                    && !objectTracker.deactivateDataSet(mCurrentDataset))
-            {
+                    && !objectTracker.deactivateDataSet(mCurrentDataset)) {
                 result = false;
-            } else if (!objectTracker.destroyDataSet(mCurrentDataset))
-            {
+            } else if (!objectTracker.destroyDataSet(mCurrentDataset)) {
                 result = false;
             }
 
@@ -347,11 +322,9 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
     }
 
     @Override
-    public void onInitARDone(ApplicationException exception)
-    {
+    public void onInitARDone(ApplicationException exception) {
 
-        if (exception == null)
-        {
+        if (exception == null) {
             initApplicationAR();
 
             mRenderer.setActive(true);
@@ -369,12 +342,10 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
             // Sets the layout background to transparent
             mUILayout.setBackgroundColor(Color.TRANSPARENT);
 
-            try
-            {
+            try {
                 vuforiaAppSession.startAR(CameraDevice.CAMERA_DIRECTION.CAMERA_DIRECTION_DEFAULT);
-            } catch (ApplicationException e)
-            {
-                logError(this,e);
+            } catch (ApplicationException e) {
+                logError(this, e);
             }
 
             boolean result = CameraDevice.getInstance().setFocusMode(
@@ -387,23 +358,18 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 
             loadingDialogHandler.sendEmptyMessage(LoadingDialogHandler.HIDE_LOADING_DIALOG);
 
-        } else
-        {
+        } else {
             logError(this, exception);
             showInitializationErrorMessage(exception.getString());
         }
     }
 
     // Shows initialization error messages as System dialogs
-    public void showInitializationErrorMessage(String message)
-    {
+    public void showInitializationErrorMessage(String message) {
         final String errorMessage = message;
-        getActivity().runOnUiThread(new Runnable()
-        {
-            public void run()
-            {
-                if (mErrorDialog != null)
-                {
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                if (mErrorDialog != null) {
                     mErrorDialog.dismiss();
                 }
 
@@ -416,10 +382,8 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
                         .setCancelable(false)
                         .setIcon(0)
                         .setPositiveButton(getString(R.string.button_OK),
-                                new DialogInterface.OnClickListener()
-                                {
-                                    public void onClick(DialogInterface dialog, int id)
-                                    {
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
                                         getActivity().finish();
                                     }
                                 });
@@ -431,17 +395,14 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
     }
 
     @Override
-    public void onVuforiaUpdate(State state)
-    {
-        if (mSwitchDatasetAsap)
-        {
+    public void onVuforiaUpdate(State state) {
+        if (mSwitchDatasetAsap) {
             mSwitchDatasetAsap = false;
             TrackerManager tm = TrackerManager.getInstance();
             ObjectTracker ot = (ObjectTracker) tm.getTracker(ObjectTracker
                     .getClassType());
             if (ot == null || mCurrentDataset == null
-                    || ot.getActiveDataSet(0) == null)
-            {
+                    || ot.getActiveDataSet(0) == null) {
                 logInfo(this, "Failed to swap datasets");
                 return;
             }
@@ -452,8 +413,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
     }
 
     @Override
-    public boolean doInitTrackers()
-    {
+    public boolean doInitTrackers() {
         // Indicate if the trackers were initialized correctly
         boolean result = true;
 
@@ -462,20 +422,17 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 
         // Trying to initialize the image tracker
         tracker = tManager.initTracker(ObjectTracker.getClassType());
-        if (tracker == null)
-        {
+        if (tracker == null) {
             logError(this, "Tracker not initialized. Tracker already initialized or the camera is already started");
             result = false;
-        } else
-        {
+        } else {
             logInfo(this, "Tracker successfully initialized");
         }
         return result;
     }
 
     @Override
-    public boolean doStartTrackers()
-    {
+    public boolean doStartTrackers() {
         // Indicate if the trackers were started correctly
         boolean result = true;
 
@@ -488,8 +445,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
     }
 
     @Override
-    public boolean doStopTrackers()
-    {
+    public boolean doStopTrackers() {
         // Indicate if the trackers were stopped correctly
         boolean result = true;
 
@@ -502,8 +458,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
     }
 
     @Override
-    public boolean doDeinitTrackers()
-    {
+    public boolean doDeinitTrackers() {
         // Indicate if the trackers were deinitialized correctly
         boolean result = true;
 
@@ -513,8 +468,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
         return result;
     }
 
-    public boolean isExtendedTrackingActive()
-    {
+    public boolean isExtendedTrackingActive() {
         return mExtendedTracking;
     }
 }

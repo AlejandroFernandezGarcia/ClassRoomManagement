@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int PETICION_PERMISO_LOCALIZACION_FINE = 101;
     private static final int PETICION_PERMISO_CAMARA = 201;
     private static final int PETICION_PERMISO_ESCRITURA_ALMACENAMIENTO = 301;
+    private static final int PETICION_PERMISO_VIBRATOR = 401;
 
     //endregion
 
@@ -106,6 +107,10 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PETICION_PERMISO_LOCALIZACION_FINE);
         }
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.VIBRATE) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.VIBRATE}, PETICION_PERMISO_VIBRATOR);
+        }
 
         navView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -238,6 +243,13 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
 
                 showToast(context, "No tiene permisos para escribir en el almacenamiento externo.");
+            }
+        }
+
+        if (requestCode == PETICION_PERMISO_VIBRATOR) {
+            if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+
+                showToast(context, "No tiene permisos para acceder a la vibración.");
             }
         }
     }

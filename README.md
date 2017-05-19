@@ -13,7 +13,6 @@ Tecnologías utilizadas
 --------------
 - Plataforma Android (Google Play Services SDK, Google Maps API)
 - Vuforia SDK (https://developer.vuforia.com/downloads/sdk)
-- Unity 3D (se utilizarán los paquetes de Vuforia Unity. Página oficial Unity: https://unity3d.com/es)
 - Amazon RDS (https://aws.amazon.com/es/rds/)
 
 Compilación
