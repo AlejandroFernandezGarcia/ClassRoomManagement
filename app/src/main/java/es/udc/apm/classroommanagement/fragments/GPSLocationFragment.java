@@ -321,10 +321,10 @@ public class GPSLocationFragment extends Fragment implements
 
         mapa = map;
         mapa.getUiSettings().setZoomControlsEnabled(true);
-        mapa.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+        mapa.animateCamera(CameraUpdateFactory.zoomTo(18.0f));
 
         if ((ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
-            CameraUpdate camUpd1 = CameraUpdateFactory.newLatLngZoom(new LatLng(43.3329874, -8.4120048), 15.0f);
+            CameraUpdate camUpd1 = CameraUpdateFactory.newLatLngZoom(new LatLng(43.3329874, -8.4120048), 18.0f);
             mapa.moveCamera(camUpd1);
         }
 
