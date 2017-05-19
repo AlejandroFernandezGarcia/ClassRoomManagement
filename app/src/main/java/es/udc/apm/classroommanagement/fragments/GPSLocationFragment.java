@@ -139,11 +139,12 @@ public class GPSLocationFragment extends Fragment implements
     public void onStart() {
         super.onStart();
 
-        apiClient = new GoogleApiClient.Builder(getActivity())
-                .enableAutoManage(getActivity(), this)
-                .addConnectionCallbacks(this)
-                .addApi(API)
-                .build();
+        if(apiClient == null || !apiClient.isConnected())
+            apiClient = new GoogleApiClient.Builder(getActivity())
+                    .enableAutoManage(getActivity(), this)
+                    .addConnectionCallbacks(this)
+                    .addApi(API)
+                    .build();
 
         enableLocationUpdates();
 
@@ -272,6 +273,7 @@ public class GPSLocationFragment extends Fragment implements
     public void onPause() {
         super.onPause();
         disableLocationUpdates();
+        apiClient.stopAutoManage(getActivity());
         apiClient.disconnect();
     }
 
