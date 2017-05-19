@@ -12,6 +12,8 @@
     <string name="location_disabled">La ubicación está deshabilitada o no tiene permisos de localización.</string>
     <string name="location_settings_change">El usuario no ha realizado los cambios de configuración necesarios.</string>
     <string name="no_camera_permissions">El acceso a la cámara no tiene permisos.</string>
+    <string name="no_ext_write_permissions">No tiene permisos para escribir en el almacenamiento externo.</string>
+    <string name="no_vibrate_permissions">No tiene permisos para acceder a la vibración.</string>
 
     <!-- Marker's popup text -->
     <string name="popup_address">Dirección:</string>

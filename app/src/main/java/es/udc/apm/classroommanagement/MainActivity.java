@@ -242,14 +242,14 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == PETICION_PERMISO_ESCRITURA_ALMACENAMIENTO) {
             if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
 
-                showToast(context, "No tiene permisos para escribir en el almacenamiento externo.");
+                showToast(context, getString(R.string.no_ext_write_permissions));
             }
         }
 
         if (requestCode == PETICION_PERMISO_VIBRATOR) {
             if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
 
-                showToast(context, "No tiene permisos para acceder a la vibración.");
+                showToast(context, getString(R.string.no_vibrate_permissions));
             }
         }
     }
