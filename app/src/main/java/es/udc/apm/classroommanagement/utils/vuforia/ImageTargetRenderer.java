@@ -87,11 +87,11 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer, AppRendererC
         mAppRenderer.onConfigurationChanged(mIsActive);
     }
 
-    // The render function called from SampleAppRendering by using RenderingPrimitives views.
+    // The render function called from AppRendering by using RenderingPrimitives views.
     // The state is owned by AppRenderer which is controlling it's lifecycle.
     // State should not be cached outside this method.
     public void renderFrame(State state, float[] projectionMatrix) {
-        // Renders video background replacing Renderer.DrawVideoBackground()
+
         mAppRenderer.renderVideoBackground();
 
         //Found a trackeable element

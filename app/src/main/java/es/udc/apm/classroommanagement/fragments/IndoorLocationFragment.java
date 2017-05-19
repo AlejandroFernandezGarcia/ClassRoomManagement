@@ -91,16 +91,16 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 
         vuforiaAppSession = new ApplicationSession(this);
 
-            startLoadingAnimation();
-            initScanningResultView();
-            mDatasetStrings.add("ApmMarks.xml");
+        startLoadingAnimation();
+        initScanningResultView();
+        mDatasetStrings.add("ApmMarks.xml");
 
-            vuforiaAppSession.initAR(getActivity(), ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        vuforiaAppSession.initAR(getActivity(), ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-            //        mGestureDetector = new GestureDetector(this, new GestureListener());
+        //        mGestureDetector = new GestureDetector(this, new GestureListener());
 
-            mIsDroidDevice = android.os.Build.MODEL.toLowerCase().startsWith(
-                    "droid");
+        mIsDroidDevice = android.os.Build.MODEL.toLowerCase().startsWith(
+                "droid");
 
     }
 

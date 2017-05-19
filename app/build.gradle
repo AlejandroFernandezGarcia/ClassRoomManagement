@@ -20,6 +20,7 @@ android {
         versionCode 1
         versionName "0.1"
         multiDexEnabled true
+        setProperty("archivesBaseName", "ClassRoomManagement")
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     dexOptions {
