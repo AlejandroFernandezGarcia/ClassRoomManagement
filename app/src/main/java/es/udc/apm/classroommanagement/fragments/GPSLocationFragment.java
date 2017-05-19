@@ -17,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,7 @@ import es.udc.apm.classroommanagement.model.Building;
 import es.udc.apm.classroommanagement.services.BuildingService;
 import es.udc.apm.classroommanagement.utils.PopupAdapter;
 
+import static com.google.android.gms.location.LocationServices.*;
 import static es.udc.apm.classroommanagement.utils.Utils.logError;
 import static es.udc.apm.classroommanagement.utils.Utils.showToast;
 
@@ -73,6 +75,7 @@ public class GPSLocationFragment extends Fragment implements
 
     private SwipeRefreshLayout swipeLayout;
 
+
     public GPSLocationFragment() {
         // Required empty public constructor
     }
@@ -82,9 +85,26 @@ public class GPSLocationFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         ((MainActivity) getActivity()).showLateralMenu(true);
         buildingService = new BuildingService();
-
-
     }
+
+    /*
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PETICION_PERMISO_LOCALIZACION) {
+            if (grantResults.length == 1
+                    && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+
+                //Permiso denegado:
+                //Deberíamos deshabilitar toda la funcionalidad relativa a la localización.
+                showToast(getActivity().getApplicationContext(), getString(R.string.no_gps_permission));
+            }
+
+
+        }
+    }
+    */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -118,11 +138,13 @@ public class GPSLocationFragment extends Fragment implements
     @Override
     public void onStart() {
         super.onStart();
-        apiClient = new GoogleApiClient.Builder(getActivity())
-                .enableAutoManage(getActivity(), this)
-                .addConnectionCallbacks(this)
-                .addApi(LocationServices.API)
-                .build();
+
+        if(apiClient == null || !apiClient.isConnected())
+            apiClient = new GoogleApiClient.Builder(getActivity())
+                    .enableAutoManage(getActivity(), this)
+                    .addConnectionCallbacks(this)
+                    .addApi(API)
+                    .build();
 
         enableLocationUpdates();
 
@@ -155,6 +177,7 @@ public class GPSLocationFragment extends Fragment implements
     }
 
     private void enableLocationUpdates() {
+
         if (isLocationServiceEnabled()) {
             locRequest = new LocationRequest();
             locRequest.setInterval(2000);
@@ -167,7 +190,7 @@ public class GPSLocationFragment extends Fragment implements
                             .build();
 
             PendingResult<LocationSettingsResult> result =
-                    LocationServices.SettingsApi.checkLocationSettings(
+                    SettingsApi.checkLocationSettings(
                             apiClient, locSettingsRequest);
 
             result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
@@ -200,25 +223,29 @@ public class GPSLocationFragment extends Fragment implements
 
     private void disableLocationUpdates() {
         if(apiClient.isConnected()) {
-            if (isLocationServiceEnabled()) {
-                LocationServices.FusedLocationApi.removeLocationUpdates(apiClient, this);
+            if (isLocationServiceEnabled() &&  (ActivityCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+
+                FusedLocationApi.removeLocationUpdates(apiClient, this);
             }
         }
     }
 
     private void startLocationUpdates() {
+
         if (isLocationServiceEnabled()) {
             if (ActivityCompat.checkSelfPermission(getActivity(),
                     Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-                //Ojo: estamos suponiendo que ya tenemos concedido el permiso.
-                //Sería recomendable implementar la posible petición en caso de no tenerlo.
-
-
-                LocationServices.FusedLocationApi.requestLocationUpdates(
+                FusedLocationApi.requestLocationUpdates(
                         apiClient, locRequest, GPSLocationFragment.this);
             }
+            /*
+            else
+                this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PETICION_PERMISO_LOCALIZACION);
+            */
         }
+
     }
 
 
@@ -227,15 +254,10 @@ public class GPSLocationFragment extends Fragment implements
         //Conectado correctamente a Google Play Services
 
         if (ActivityCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    PETICION_PERMISO_LOCALIZACION);
-        } else {
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             Location lastLocation =
-                    LocationServices.FusedLocationApi.getLastLocation(apiClient);
+                    FusedLocationApi.getLastLocation(apiClient);
 
             if (lastLocation != null) {
                 moveMap(lastLocation);
@@ -251,6 +273,7 @@ public class GPSLocationFragment extends Fragment implements
     public void onPause() {
         super.onPause();
         disableLocationUpdates();
+        apiClient.stopAutoManage(getActivity());
         apiClient.disconnect();
     }
 
@@ -270,29 +293,6 @@ public class GPSLocationFragment extends Fragment implements
         showToast(getActivity().getApplicationContext(), getString(R.string.google_services_suspended));
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PETICION_PERMISO_LOCALIZACION) {
-            if (grantResults.length == 1
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                //Permiso concedido
-
-                @SuppressWarnings("MissingPermission")
-                Location lastLocation =
-                        LocationServices.FusedLocationApi.getLastLocation(apiClient);
-
-                moveMap(lastLocation);
-                movePersonMarker(lastLocation);
-
-            } else {
-                //Permiso denegado:
-                //Deberíamos deshabilitar toda la funcionalidad relativa a la localización.
-
-                showToast(getActivity().getApplicationContext(), getString(R.string.no_gps_permission));
-            }
-        }
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -312,10 +312,10 @@ public class GPSLocationFragment extends Fragment implements
 
     @Override
     public void onLocationChanged(Location location) {
-        moveMap(location);
+        //moveMap(location);
         movePersonMarker(location);
         //remove location callback:
-        disableLocationUpdates();
+        //disableLocationUpdates();
     }
 
     @Override
@@ -323,19 +323,22 @@ public class GPSLocationFragment extends Fragment implements
 
         mapa = map;
         mapa.getUiSettings().setZoomControlsEnabled(true);
-        mapa.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+        mapa.animateCamera(CameraUpdateFactory.zoomTo(18.0f));
 
-        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+        if ((ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+            CameraUpdate camUpd1 = CameraUpdateFactory.newLatLngZoom(new LatLng(43.3329874, -8.4120048), 18.0f);
+            mapa.moveCamera(camUpd1);
         }
-        mapa.setMyLocationEnabled(true);
-        if (isLocationServiceEnabled())
-            map.getUiSettings().setMyLocationButtonEnabled(true);
+
+        if (isLocationServiceEnabled() &&  (ActivityCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+            mapa.setMyLocationEnabled(true);
+            mapa.getUiSettings().setMyLocationButtonEnabled(true);
+        }
 
 
-
-        map.setInfoWindowAdapter(new PopupAdapter(LayoutInflater.from(getActivity().getApplicationContext()), getActivity().getApplicationContext()));
-        map.setOnInfoWindowClickListener(this);
+        mapa.setInfoWindowAdapter(new PopupAdapter(LayoutInflater.from(getActivity().getApplicationContext()), getActivity().getApplicationContext()));
+        mapa.setOnInfoWindowClickListener(this);
         drawBuildingsMarkers();
     }
 

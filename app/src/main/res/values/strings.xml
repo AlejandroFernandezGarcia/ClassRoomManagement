@@ -6,11 +6,14 @@
     <string name="no_internet">No internet connection.</string>
     <string name="google_services_fail">The connection to Google Play Services has failed.</string>
     <string name="google_services_suspended">The connection to Google Play Services has been interrupted.</string>
-    <string name="no_gps_permission">The connection to Google Play Services has been interrupted.</string>
+    <string name="no_gps_permission">No locations permissions.</string>
     <string name="location_conf_request">Error triying to solve the location settings.</string>
     <string name="location_no_settings_change">Unable to meet required location settings.</string>
     <string name="location_disabled">Location is disabled or does not have location permissions.</string>
     <string name="location_settings_change">The user has not made the necessary configuration changes.</string>
+    <string name="no_camera_permissions">No camera permissions.</string>
+    <string name="no_ext_write_permissions">You do not have permissions to write to external storage.</string>
+    <string name="no_vibrate_permissions">You do not have permission to access the vibration.</string>
 
     <!-- Button text -->
     <string name="loading">Loading</string>

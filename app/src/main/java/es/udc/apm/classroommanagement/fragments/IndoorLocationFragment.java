@@ -91,11 +91,6 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 
         vuforiaAppSession = new ApplicationSession(this);
 
-        if (ContextCompat.checkSelfPermission(this.getContext(), android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            this.requestPermissions(new String[]{android.Manifest.permission.CAMERA}, Constants.REQUEST_CAMERA_PERMISSION);
-        } else {
-
-
             startLoadingAnimation();
             initScanningResultView();
             mDatasetStrings.add("ApmMarks.xml");
@@ -106,24 +101,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 
             mIsDroidDevice = android.os.Build.MODEL.toLowerCase().startsWith(
                     "droid");
-        }
-    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch (requestCode) {
-            case Constants.REQUEST_CAMERA_PERMISSION:
-                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    showToast(getActivity().getApplicationContext(), "No tiene permisos para acceder a la cámara");
-                }
-                break;
-            case Constants.REQUEST_VIBRATOR_PERMISSION:
-                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-
-                }
-        }
     }
 
     @Override

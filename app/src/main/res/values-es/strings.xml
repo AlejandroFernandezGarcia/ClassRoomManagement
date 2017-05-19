@@ -6,12 +6,14 @@
     <string name="no_internet">No hay conexión a internet.</string>
     <string name="google_services_fail">Ha fallado la conexión con Google Play Services.</string>
     <string name="google_services_suspended">Se ha interrumpido la conexión con Google Play Services.</string>
-    <string name="no_gps_permission">Se ha interrumpido la conexión con Google Play Services.</string>
+    <string name="no_gps_permission">No tiene permisos de localización.</string>
     <string name="location_conf_request">Error al intentar solucionar configuración de ubicación.</string>
     <string name="location_no_settings_change">No se puede cumplir la configuración de ubicación necesaria.</string>
     <string name="location_disabled">La ubicación está deshabilitada o no tiene permisos de localización.</string>
     <string name="location_settings_change">El usuario no ha realizado los cambios de configuración necesarios.</string>
-
+    <string name="no_camera_permissions">El acceso a la cámara no tiene permisos.</string>
+    <string name="no_ext_write_permissions">No tiene permisos para escribir en el almacenamiento externo.</string>
+    <string name="no_vibrate_permissions">No tiene permisos para acceder a la vibración.</string>
 
     <!-- Marker's popup text -->
     <string name="popup_address">Dirección:</string>
