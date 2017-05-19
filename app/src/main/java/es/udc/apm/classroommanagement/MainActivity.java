@@ -1,10 +1,16 @@
 package es.udc.apm.classroommanagement;
 
+import android.*;
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v13.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,6 +25,7 @@ import es.udc.apm.classroommanagement.fragments.LoginFragment;
 import es.udc.apm.classroommanagement.fragments.RegisterFragment;
 
 import static es.udc.apm.classroommanagement.utils.Utils.logInfo;
+import static es.udc.apm.classroommanagement.utils.Utils.showToast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,11 +59,20 @@ public class MainActivity extends AppCompatActivity {
         return navView;
     }
 
+    private Context context;
+    private boolean camera_permissions;
+
+    private static final int PETICION_PERMISO_LOCALIZACION_FINE = 101;
+    private static final int PETICION_PERMISO_CAMARA = 201;
+    private static final int PETICION_PERMISO_ESCRITURA_ALMACENAMIENTO = 301;
+
     //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        context = getApplicationContext();
         setContentView(R.layout.activity_main);
 
         Toolbar appbar = (Toolbar) findViewById(R.id.appbar);
@@ -75,6 +91,21 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_frame, new LoginFragment())
                 .commit();
+
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, PETICION_PERMISO_CAMARA);
+        else
+            camera_permissions = true;
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, PETICION_PERMISO_ESCRITURA_ALMACENAMIENTO);
+
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PETICION_PERMISO_LOCALIZACION_FINE);
+        }
+
 
         navView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -117,23 +148,27 @@ public class MainActivity extends AppCompatActivity {
                                 drawerToggle.runWhenIdle(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Class fragmentClass = IndoorLocationFragment.class;
-                                        //changeFragment = true;
-                                        drawerLayout.closeDrawers();
-                                        Fragment fragment = null;
-                                        try {
-                                            fragment = (Fragment) fragmentClass.newInstance();
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                        getSupportFragmentManager().beginTransaction()
-                                                .replace(R.id.content_frame, fragment)
-                                                .commit();
-                                        // Highlight the selected item has been done by NavigationView
-                                        menuItem.setChecked(true);
-                                        // Set action bar title
-                                        setTitle(menuItem.getTitle());
 
+                                        if (camera_permissions) {
+                                            Class fragmentClass = IndoorLocationFragment.class;
+                                            //changeFragment = true;
+                                            drawerLayout.closeDrawers();
+                                            Fragment fragment = null;
+                                            try {
+                                                fragment = (Fragment) fragmentClass.newInstance();
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                            getSupportFragmentManager().beginTransaction()
+                                                    .replace(R.id.content_frame, fragment)
+                                                    .commit();
+                                            // Highlight the selected item has been done by NavigationView
+                                            menuItem.setChecked(true);
+                                            // Set action bar title
+                                            setTitle(menuItem.getTitle());
+                                        }
+                                        else
+                                            showToast(context, getString(R.string.no_camera_permissions));
                                     }
                                 });
 
@@ -177,6 +212,34 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     }
                 });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == PETICION_PERMISO_CAMARA) {
+            if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                camera_permissions = false;
+                showToast(context, getString(R.string.no_camera_permissions));
+            }
+            else
+                camera_permissions = true;
+        }
+
+        if (requestCode == PETICION_PERMISO_LOCALIZACION_FINE) {
+            if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+
+                showToast(context, getString(R.string.no_gps_permission));
+            }
+        }
+
+        if (requestCode == PETICION_PERMISO_ESCRITURA_ALMACENAMIENTO) {
+            if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+
+                showToast(context, "No tiene permisos para escribir en el almacenamiento externo.");
+            }
+        }
     }
 
     @Override

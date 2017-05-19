@@ -88,9 +88,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
         super.onCreate(savedInstanceState);
         ((MainActivity)getActivity()).showLateralMenu(true);
 
-        if (ContextCompat.checkSelfPermission(this.getContext(), android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            this.requestPermissions(new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
-        } else {
+
 
             vuforiaAppSession = new ApplicationSession(this);
 
@@ -105,19 +103,9 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
 
             mIsDroidDevice = android.os.Build.MODEL.toLowerCase().startsWith(
                     "droid");
-        }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == 0) {
-            if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                showToast(getActivity().getApplicationContext(), "No tiene permisos para acceder a la cámara");
-            }
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
