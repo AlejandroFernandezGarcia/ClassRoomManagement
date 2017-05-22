@@ -1,22 +1,17 @@
 package es.udc.apm.classroommanagement.fragments;
 
-import android.Manifest;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.v13.app.FragmentCompat;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
-import android.content.DialogInterface;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.RelativeLayout;
 
 import com.vuforia.CameraDevice;
 import com.vuforia.DataSet;
@@ -32,16 +27,14 @@ import java.util.ArrayList;
 
 import es.udc.apm.classroommanagement.MainActivity;
 import es.udc.apm.classroommanagement.R;
-import es.udc.apm.classroommanagement.utils.Constants;
-import es.udc.apm.classroommanagement.utils.vuforia.ApplicationSession;
-import es.udc.apm.classroommanagement.utils.vuforia.ImageTargetRenderer;
-import es.udc.apm.classroommanagement.utils.vuforia.LoadingDialogHandler;
 import es.udc.apm.classroommanagement.utils.vuforia.ApplicationControl;
 import es.udc.apm.classroommanagement.utils.vuforia.ApplicationException;
 import es.udc.apm.classroommanagement.utils.vuforia.ApplicationGLView;
+import es.udc.apm.classroommanagement.utils.vuforia.ApplicationSession;
+import es.udc.apm.classroommanagement.utils.vuforia.ImageTargetRenderer;
+import es.udc.apm.classroommanagement.utils.vuforia.LoadingDialogHandler;
 import es.udc.apm.classroommanagement.utils.vuforia.ScanningResultDialogHandler;
 
-import static es.udc.apm.classroommanagement.utils.Utils.showToast;
 import static es.udc.apm.classroommanagement.utils.Utils.logError;
 import static es.udc.apm.classroommanagement.utils.Utils.logInfo;
 
@@ -291,7 +284,7 @@ public class IndoorLocationFragment extends Fragment implements ApplicationContr
             String name = "Current Dataset : " + trackable.getName();
             trackable.setUserData(name);
             logInfo(this, "UserData:Set the following user data "
-                    + (String) trackable.getUserData());
+                    + trackable.getUserData());
         }
         return true;
     }

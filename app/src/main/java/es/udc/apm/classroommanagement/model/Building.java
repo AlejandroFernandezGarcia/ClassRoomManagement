@@ -54,11 +54,7 @@ public class Building {
             return false;
         if (getRegion() != null ? !getRegion().equals(building.getRegion()) : building.getRegion() != null)
             return false;
-        if (getCountry() != null ? !getCountry().equals(building.getCountry()) : building.getCountry() != null)
-            return false;
-        if (getWeb_url() != null ? !getWeb_url().equals(building.getWeb_url()) : building.getWeb_url() != null)
-            return false;
-        return getImg_url() != null ? getImg_url().equals(building.getImg_url()) : building.getImg_url() == null;
+        return getCountry() != null ? getCountry().equals(building.getCountry()) : building.getCountry() == null && (getWeb_url() != null ? getWeb_url().equals(building.getWeb_url()) : building.getWeb_url() == null && (getImg_url() != null ? getImg_url().equals(building.getImg_url()) : building.getImg_url() == null));
 
     }
 

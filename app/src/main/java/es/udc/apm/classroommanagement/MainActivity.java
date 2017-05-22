@@ -1,6 +1,5 @@
 package es.udc.apm.classroommanagement;
 
-import android.*;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;

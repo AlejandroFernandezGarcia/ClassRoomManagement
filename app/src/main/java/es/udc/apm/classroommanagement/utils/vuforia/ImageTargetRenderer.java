@@ -7,13 +7,10 @@ import com.vuforia.State;
 import com.vuforia.Trackable;
 import com.vuforia.TrackableResult;
 
-import java.util.concurrent.ExecutionException;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import es.udc.apm.classroommanagement.fragments.IndoorLocationFragment;
-import es.udc.apm.classroommanagement.services.RoomService;
 
 import static es.udc.apm.classroommanagement.utils.Utils.logInfo;
 

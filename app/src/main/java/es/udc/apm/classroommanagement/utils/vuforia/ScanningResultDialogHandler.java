@@ -1,30 +1,22 @@
 package es.udc.apm.classroommanagement.utils.vuforia;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
-import android.provider.ContactsContract;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import android.support.v4.app.Fragment;
-
-import es.udc.apm.classroommanagement.Manifest;
 import es.udc.apm.classroommanagement.R;
 import es.udc.apm.classroommanagement.model.Event;
 import es.udc.apm.classroommanagement.model.Room;

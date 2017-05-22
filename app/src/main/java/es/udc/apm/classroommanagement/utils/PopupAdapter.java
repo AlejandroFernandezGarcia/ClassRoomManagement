@@ -1,19 +1,21 @@
 package es.udc.apm.classroommanagement.utils;
 
-/**
- * Created by david on 13/05/17.
+/*
+  Created by david on 13/05/17.
  */
 
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.model.Marker;
 import com.squareup.picasso.Picasso;
+
 import es.udc.apm.classroommanagement.R;
-import android.content.Context;
 
 public class PopupAdapter implements InfoWindowAdapter {
     private View popup=null;
@@ -46,12 +48,12 @@ public class PopupAdapter implements InfoWindowAdapter {
             String phone = tmp[1];
             String web_url = tmp[2];
             String img_url = tmp[3];
-            img_view.setVisibility(View.VISIBLE);
-            snippet_tv.setVisibility(View.VISIBLE);
             Picasso.with(context).load(img_url).into(img_view);
             snippet_tv.setText(context.getString(R.string.popup_address)+ " " + address + "\n" +
                     context.getString(R.string.popup_phone) + " " + phone + "\n" +
                     context.getString(R.string.popup_web) + " " + web_url);
+            img_view.setVisibility(View.VISIBLE);
+            snippet_tv.setVisibility(View.VISIBLE);
         }
         else{
             img_view.setVisibility(View.GONE);

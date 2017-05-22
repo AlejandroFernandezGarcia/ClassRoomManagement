@@ -18,3 +18,4 @@
 -keep class * extends android.support.v7.internal.view.menu.MenuBuilder
 -keep class * implements android.support.v7.internal.view.menu.MenuBuilder
 -keep class android.support.v7.internal.view.menu.MenuBuilder
+-dontwarn com.squareup.okhttp.**

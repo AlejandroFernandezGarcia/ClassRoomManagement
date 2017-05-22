@@ -17,7 +17,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,6 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
@@ -43,6 +41,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -52,7 +51,9 @@ import es.udc.apm.classroommanagement.model.Building;
 import es.udc.apm.classroommanagement.services.BuildingService;
 import es.udc.apm.classroommanagement.utils.PopupAdapter;
 
-import static com.google.android.gms.location.LocationServices.*;
+import static com.google.android.gms.location.LocationServices.API;
+import static com.google.android.gms.location.LocationServices.FusedLocationApi;
+import static com.google.android.gms.location.LocationServices.SettingsApi;
 import static es.udc.apm.classroommanagement.utils.Utils.logError;
 import static es.udc.apm.classroommanagement.utils.Utils.showToast;
 
@@ -376,7 +377,9 @@ public class GPSLocationFragment extends Fragment implements
         assert buildings != null;
         for (Building building : buildings) {
             addMarker(mapa, building.getLatitude(), building.getLongitude(), building.getName(), building.getInfoString());
-
+            Picasso.with(getActivity().getApplicationContext())
+                    .load(building.getImg_url())
+                    .fetch();
         }
     }
 

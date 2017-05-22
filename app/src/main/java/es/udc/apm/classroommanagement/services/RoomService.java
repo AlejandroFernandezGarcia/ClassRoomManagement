@@ -2,12 +2,9 @@ package es.udc.apm.classroommanagement.services;
 
 import android.os.AsyncTask;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import es.udc.apm.classroommanagement.dao.RoleDAO;
 import es.udc.apm.classroommanagement.dao.RoomDAO;
-import es.udc.apm.classroommanagement.model.Role;
 import es.udc.apm.classroommanagement.model.Room;
 
 /**
