@@ -8,6 +8,8 @@ Las funcionalidades más destacadas son las siguientes:
 - Localización de edificios de interés (facultades, escuelas, etc) vía GPS, mostrando al mismo tiempo la posición real del usuario para facilitar su guidado hasta el edificio.
 - Reconocimiento de marcadores situados en las salas de los edificios mediante la cámara, que servirá para proporcionar información de los horarios de los eventos producidos en esa aula.
 
+[Demostración de la aplicación](https://www.dropbox.com/s/l7p7v4i39a3wexk/Video_APM_ClassRoomManagment.mp4?dl=0)
+
 Tecnologías utilizadas
 --------------
 - Java (https://www.java.com/es/)
